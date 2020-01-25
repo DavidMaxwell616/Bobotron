@@ -62,19 +62,6 @@ function create() {
 
 }
 
-function shootBullet(scene, bullet, direction) {
-  bullet.setPosition(player.x, player.y);
-  bullet.setVelocityX(direction.xv * 5);
-  bullet.setVelocityY(direction.yv * 5);
-  player.flipX = direction.xv < 0;
-  scene.world.on('collisionstart', function (event, objects, bullet) {
-    bullet.destroy();
-  });
-  // scene.world.on('collisionstart', function (event, bullet, guards) {
-  //   console.log('shot guard');
-  // });
-}
-
 function updateStats() {
   levelText.setText('LEVEL: ' + curLevel);
   scoreText.setText('SCORE: ' + score);

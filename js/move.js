@@ -64,13 +64,14 @@ function moveFamily() {
   var members = Family.getChildren();
 
   members.forEach(person => {
-    person.lifeSpan += -1;
+    // person.lifeSpan += -.001;
     if (person.lifeSpan <= 0) {
       if (person.willSpawnProg) {
         createProg(person.x, person.y);
       }
       person.destroy();
     } else {
+
       if (Math.random() < 0.01 && person.panic < 3) {
         person.panic += 0.1;
       }
@@ -93,13 +94,14 @@ function moveFamily() {
           case 3:
             velY = 0.3 * person.panic;
         }
-        if (person.velX < 0)
+        console.log(_scene.anims);
+        if (velX < 0)
           person.anims.play(person.name + 'WalkLeft');
-        if (person.velX > 0)
+        if (velX > 0)
           person.anims.play(person.name + 'WalkRight');
-        if (person.velY < 0)
+        if (velY < 0)
           person.anims.play(person.name + 'WalkUp');
-        if (person.velY > 0)
+        if (velY > 0)
           person.anims.play(person.name + 'WalkDown');
 
         person.x += velX;

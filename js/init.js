@@ -4,7 +4,7 @@ function initEntities(levelData) {
   // Key:
   // Family, Electrodes, Grunts, Hulks, Spheroids, Brains, Quarks (not the Star Trek DS9 version)
   initProtagonist();
-  //initFamily(levelData[0]);
+  initFamily(levelData[0]);
   //initElectrodes(levelData[1]);
   // initGrunts(levelData[2]);
   // initHulks(levelData[3]);
@@ -154,6 +154,7 @@ function initFamily(number) {
   dad.setPosition(descr.cx, descr.cy);
   setFamilyProperties(dad);
   dad.name = 'Dad';
+  initPeopleAnimations(dad);
   Family.add(dad);
   if (number < 2)
     return;
@@ -162,6 +163,7 @@ function initFamily(number) {
   mom.setPosition(descr.cx, descr.cy);
   setFamilyProperties(mom);
   mom.name = 'Mom';
+  initPeopleAnimations(mom);
   Family.add(mom);
   if (number < 3)
     return;
@@ -171,6 +173,7 @@ function initFamily(number) {
     child.setPosition(descr.cx, descr.cy);
     setFamilyProperties(child);
     child.name = 'Child';
+    initPeopleAnimations(child);
     Family.add(child);
   }
 
