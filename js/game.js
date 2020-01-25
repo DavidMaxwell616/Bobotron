@@ -27,9 +27,9 @@ function create() {
 
   Family = this.add.group();
   Enemies = this.add.group();
+  Bullets = this.add.group();
   maxxdaddy = this.add.image(0, 0, 'maxxdaddy')
   maxxdaddy.setPosition(gameWidth - maxxdaddy.width, gameHeight - maxxdaddy.height).setOrigin(0);
-  initAnimations(this);
   return;
   playerXSpeed = 0;
   playerYSpeed = 0;
@@ -59,31 +59,7 @@ function create() {
     shooting = false;
   });
 
-  // this.world.on('collisionstart', function (event, player, objects) {
-  //   fryPlayer(this);
-  // });
 
-}
-
-function movePlayer(xv, yv) {
-  if (xv != 0) {
-    if (playerXSpeed === -xv) {
-      playerXSpeed = 0;
-      player.anims.pause(player.anims.currentAnim.frames[0]);
-    } else if (playerXSpeed === 0) {
-      playerXSpeed = xv;
-      player.anims.play('run');
-    }
-  }
-  if (yv != 0) {
-    if (playerYSpeed === -yv) {
-      playerYSpeed = 0;
-      player.anims.pause(player.anims.currentAnim.frames[0]);
-    } else if (playerYSpeed === 0) {
-      playerYSpeed = yv;
-      player.anims.play('run');
-    }
-  }
 }
 
 function shootBullet(scene, bullet, direction) {
@@ -97,40 +73,6 @@ function shootBullet(scene, bullet, direction) {
   // scene.world.on('collisionstart', function (event, bullet, guards) {
   //   console.log('shot guard');
   // });
-}
-
-function initAnimations(scene) {
-  var entities = [
-    'Protagonist',
-    'Dad',
-    'Mom',
-    'Child',
-    'Brain'
-  ]
-
-  entities.forEach(element => {
-    setupAnimation(scene, element, 1, 3, 'WalkLeft');
-    setupAnimation(scene, element, 4, 6, 'WalkRight');
-    setupAnimation(scene, element, 7, 9, 'WalkDown');
-    setupAnimation(scene, element, 10, 12, 'WalkUp');
-  });
-  setupAnimation(scene, 'Grunt', 1, 3, 'Walk');
-}
-
-function setupAnimation(scene, entity, start, end, movement) {
-  var frameNames = scene.anims.generateFrameNames('spriteMap', {
-    start: start,
-    end: end,
-    zeroPad: 2,
-    prefix: entity + '_',
-    suffix: '.png'
-  });
-  scene.anims.create({
-    key: entity + movement,
-    frames: frameNames,
-    frameRate: 10,
-    repeat: -1
-  });
 }
 
 function updateStats() {
@@ -310,7 +252,7 @@ function update() {
     startLevel(this);
     levelRendered = true;
   } else {
-    moveEnemies(this);
+    moveEntities(this);
   }
   // if (isInMenu) {
 

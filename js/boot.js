@@ -96,6 +96,6 @@ var HumanScore;
 var levelRendered = false;
 var Family;
 var Enemies;
-
+var Bullets;
 
   
