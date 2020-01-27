@@ -181,20 +181,15 @@ function initFamily(number) {
 
 function setFamilyProperties(member) {
   member.rotation = 0;
-  member.cx = 100;
-  member.cy = 100;
   member.velX = 0;
   member.velY = 0;
   member.stepsize = 10;
   member.panic = 1;
   member.lifeSpan = 1 * SECS_TO_NOMINALS;
   member.isDying = false;
-  member.renderPos = {
-    cx: this.cx,
-    cy: this.cy
-  };
   member.willSpawnProg = false;
   member.facing = 0;
+  member.speed = 1;
 }
 
 function findSpawn(playerSafeDist) {
@@ -410,7 +405,6 @@ function Projectile(descr) {
       // ctx.restore();
       //  break;
     default:
-      console.log(Protagonist.x, descr.x);
       var graphics = _scene.add.graphics();
       var circle = new Phaser.Geom.Circle(descr.x, descr.y, 6);
       graphics.fillStyle(0xffffff, .5);

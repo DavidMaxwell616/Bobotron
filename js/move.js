@@ -71,41 +71,40 @@ function moveFamily() {
       }
       person.destroy();
     } else {
-
-      if (Math.random() < 0.01 && person.panic < 3) {
-        person.panic += 0.1;
-      }
-      var velX = 0,
-        velY = 0;
-      if (Math.random() < 0.02 * person.panic) {
+      person.panic = 1;
+      // if (Math.random() < 0.01 && person.panic < 3) {
+      //   person.panic += 0.1;
+      // }
+      var chance = Math.random();
+      if (chance < 0.02 * person.panic) {
         //2% chance to change direction
 
         var n = Math.floor(Math.random() * 4);
         switch (n) {
           case 0:
-            velX = -0.3 * person.panic;
+            person.velX = -3 * person.panic;
             break;
           case 1:
-            velY = -0.3 * person.panic;
+            person.velY = -3 * person.panic;
             break;
           case 2:
-            velX = 0.3 * person.panic;
+            person.velX = 3 * person.panic;
             break;
           case 3:
-            velY = 0.3 * person.panic;
+            person.velY = 3 * person.panic;
         }
-        console.log(_scene.anims);
-        if (velX < 0)
+        if (person.velX < 0)
           person.anims.play(person.name + 'WalkLeft');
-        if (velX > 0)
+        if (person.velX > 0)
           person.anims.play(person.name + 'WalkRight');
-        if (velY < 0)
+        if (person.velY < 0)
           person.anims.play(person.name + 'WalkUp');
-        if (velY > 0)
+        if (person.velY > 0)
           person.anims.play(person.name + 'WalkDown');
+        //        console.log(person.name, 'velX' + person.velX, 'velY' + person.velY);
 
-        person.x += velX;
-        person.y += velY;
+        person.x += person.velX;
+        person.y += person.velY;
       }
     }
   });
