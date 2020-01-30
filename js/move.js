@@ -64,51 +64,25 @@ function moveFamily() {
   var members = Family.getChildren();
 
   members.forEach(person => {
-    // person.lifeSpan += -.001;
-    if (person.lifeSpan <= 0) {
-      if (person.willSpawnProg) {
-        createProg(person.x, person.y);
+    if (person.name.anims != null) {
+      var anim = person.name.anims.currentAnims;
+      if (person.velX < 0 && anim != person.name + 'WalkLeft') {
+        person.anims.play(anim);
+      } else if (person.velX < 0 && anim != person.name + 'WalkRight') {
+        person.anims.play(anim);
       }
-      person.destroy();
-    } else {
-      person.panic = 1;
-      // if (Math.random() < 0.01 && person.panic < 3) {
-      //   person.panic += 0.1;
-      // }
-      var chance = Math.random();
-      if (chance < 0.02 * person.panic) {
-        //2% chance to change direction
-
-        var n = Math.floor(Math.random() * 4);
-        switch (n) {
-          case 0:
-            person.velX = -3 * person.panic;
-            break;
-          case 1:
-            person.velY = -3 * person.panic;
-            break;
-          case 2:
-            person.velX = 3 * person.panic;
-            break;
-          case 3:
-            person.velY = 3 * person.panic;
-        }
-        if (person.velX < 0)
-          person.anims.play(person.name + 'WalkLeft');
-        if (person.velX > 0)
-          person.anims.play(person.name + 'WalkRight');
-        if (person.velY < 0)
-          person.anims.play(person.name + 'WalkUp');
-        if (person.velY > 0)
-          person.anims.play(person.name + 'WalkDown');
-        //        console.log(person.name, 'velX' + person.velX, 'velY' + person.velY);
-
-        person.x += person.velX;
-        person.y += person.velY;
-      }
+      // if (person.velY < 0)
+      //   person.anims.play(person.name + 'WalkUp');
+      // if (person.velY > 0)
+      //   person.anims.play(person.name + 'WalkDown');
+      //        console.log(person.name, 'velX' + person.velX, 'velY' + person.velY);
     }
+    person.x += person.velX;
+    person.y += person.velY;
+    edgeBounce(person);
   });
 }
+
 
 function findClosestFamilyMember(posX, posY) {
   var closest = null;
@@ -193,12 +167,11 @@ function moveBullets(du) {
 
 function edgeBounce(entity) {
   var bounceHappened = false;
-
   var velX = entity.velX;
   var velY = entity.velY;
   var cx = entity.x;
   var cy = entity.y;
-  var r = entity.getRadius();
+  var r = getRadius(entity);
 
   if (cx + velX > wallRight - r || cx + velX < wallLeft + r) {
     bounceHappened = true;

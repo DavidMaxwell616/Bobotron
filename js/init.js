@@ -140,7 +140,7 @@ function setupAnimation(entity, start, end, movement) {
   var anim = _scene.anims.create({
     key: entity.name + movement,
     frames: frameNames,
-    frameRate: 10,
+    frameRate: 5,
     repeat: -1
   });
 }
@@ -181,7 +181,7 @@ function initFamily(number) {
 
 function setFamilyProperties(member) {
   member.rotation = 0;
-  member.velX = 0;
+  member.velX = 1;
   member.velY = 0;
   member.stepsize = 10;
   member.panic = 1;
