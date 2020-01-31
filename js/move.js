@@ -64,18 +64,27 @@ function moveFamily() {
   var members = Family.getChildren();
 
   members.forEach(person => {
-    if (person.name.anims != null) {
-      var anim = person.name.anims.currentAnims;
-      if (person.velX < 0 && anim != person.name + 'WalkLeft') {
-        person.anims.play(anim);
-      } else if (person.velX < 0 && anim != person.name + 'WalkRight') {
-        person.anims.play(anim);
+    if (Math.random() < 0.02 * person.panic) {
+      //2% chance to change direction
+
+      var n = Math.floor(Math.random() * 4);
+      switch (n) {
+        case 0:
+          person.velX = -0.3 * person.panic;
+          person.anims.play(person.name + 'WalkLeft');
+          break;
+        case 1:
+          person.velY = -0.3 * person.panic;
+          person.anims.play(person.name + 'WalkUp');
+          break;
+        case 2:
+          person.velX = 0.3 * person.panic;
+          person.anims.play(person.name + 'WalkRight');
+          break;
+        case 3:
+          person.velY = 0.3 * person.panic;
+          person.anims.play(person.name + 'WalkDown');
       }
-      // if (person.velY < 0)
-      //   person.anims.play(person.name + 'WalkUp');
-      // if (person.velY > 0)
-      //   person.anims.play(person.name + 'WalkDown');
-      //        console.log(person.name, 'velX' + person.velX, 'velY' + person.velY);
     }
     person.x += person.velX;
     person.y += person.velY;

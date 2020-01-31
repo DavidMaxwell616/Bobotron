@@ -6,7 +6,7 @@ function initEntities(levelData) {
   initProtagonist();
   initFamily(levelData[0]);
   //initElectrodes(levelData[1]);
-  // initGrunts(levelData[2]);
+  initGrunts(levelData[2]);
   // initHulks(levelData[3]);
   // initSpheroids(levelData[4]);
   // initBrains(levelData[5]);
@@ -47,6 +47,13 @@ function startLevel(scene) {
   }
 }
 
+function drawDad() {
+  for (let index = 0; index < 12; index++) {
+    var dad = _scene.add.sprite(index * 20, gameHeight / 2 + 50, 'spriteMap', 'Dad_0' + index + '.png');
+
+  }
+}
+
 function findClosestFamilyMember(posX, posY) {
   var closest = null;
   var minDistSq = Infinity;
@@ -70,22 +77,22 @@ function initProtagonist() {
   Protagonist.velY = 0;
   //move Protagonist
   _scene.input.keyboard.on('keydown_LEFT', function (event) {
-    Protagonist.velX -= Protagonist.speed;
+    Protagonist.velX = -Protagonist.speed;
     Protagonist.anims.play('ProtagonistWalkLeft');
   });
 
   _scene.input.keyboard.on('keydown_RIGHT', function (event) {
-    Protagonist.velX += Protagonist.speed;
+    Protagonist.velX = Protagonist.speed;
     Protagonist.anims.play('ProtagonistWalkRight');
   });
 
   _scene.input.keyboard.on('keydown_UP', function (event) {
-    Protagonist.velY -= Protagonist.speed;
+    Protagonist.velY = -Protagonist.speed;
     Protagonist.anims.play('ProtagonistWalkUp');
   });
 
   _scene.input.keyboard.on('keydown_DOWN', function (event) {
-    Protagonist.velY += Protagonist.speed;
+    Protagonist.velY = Protagonist.speed;
     Protagonist.anims.play('ProtagonistWalkDown');
   });
   //Protagonist shoots
