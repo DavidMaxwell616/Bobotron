@@ -68,7 +68,7 @@ var SECS_TO_NOMINALS = 1000 / NOMINAL_UPDATE_INTERVAL;
 // to be added to the high score list.
 var g_hasCheated = false;
 var colorCounter = 0;
-  
+
 var Brain;
 var Child;
 var Dad;
@@ -97,5 +97,5 @@ var levelRendered = false;
 var Family;
 var Enemies;
 var Bullets;
-
-  
+var Particles;
+var isMoving = false;

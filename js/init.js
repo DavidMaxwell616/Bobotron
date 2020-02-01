@@ -75,25 +75,22 @@ function initProtagonist() {
   initPeopleAnimations(Protagonist);
   Protagonist.velX = 0;
   Protagonist.velY = 0;
+  var isMoving = false;
   //move Protagonist
   _scene.input.keyboard.on('keydown_LEFT', function (event) {
-    Protagonist.velX = -Protagonist.speed;
-    Protagonist.anims.play('ProtagonistWalkLeft');
+    movePlayer('left');
   });
 
   _scene.input.keyboard.on('keydown_RIGHT', function (event) {
-    Protagonist.velX = Protagonist.speed;
-    Protagonist.anims.play('ProtagonistWalkRight');
+    movePlayer('right');
   });
 
   _scene.input.keyboard.on('keydown_UP', function (event) {
-    Protagonist.velY = -Protagonist.speed;
-    Protagonist.anims.play('ProtagonistWalkUp');
+    movePlayer('up');
   });
 
   _scene.input.keyboard.on('keydown_DOWN', function (event) {
-    Protagonist.velY = Protagonist.speed;
-    Protagonist.anims.play('ProtagonistWalkDown');
+    movePlayer('down');
   });
   //Protagonist shoots
   _scene.input.keyboard.on('keydown_Q', function (event) {
@@ -126,6 +123,7 @@ function initProtagonist() {
   _scene.input.keyboard.on('keydown_C', function (event) {
     fireBullet(Protagonist.x, Protagonist.y, _bulletVel, _bulletVel)
   });
+
 }
 
 function initPeopleAnimations(entity) {
@@ -134,6 +132,31 @@ function initPeopleAnimations(entity) {
   setupAnimation(entity, 7, 9, 'WalkDown');
   setupAnimation(entity, 10, 12, 'WalkUp');
 
+}
+
+
+function movePlayer(dir) {
+  switch (dir) {
+    case 'left':
+      Protagonist.velX = Protagonist.velX <= 0 ? -Protagonist.speed : 0;
+      Protagonist.anims.play('ProtagonistWalkLeft');
+      break;
+    case 'right':
+      Protagonist.velX = Protagonist.velX >= 0 ? Protagonist.speed : 0;
+      Protagonist.anims.play('ProtagonistWalkRight');
+      break;
+    case 'up':
+      Protagonist.velY = Protagonist.velY <= 0 ? -Protagonist.speed : 0;
+      Protagonist.anims.play('ProtagonistWalkUp');
+      break;
+    case 'down':
+      Protagonist.velY = Protagonist.velY >= 0 ? Protagonist.speed : 0;
+      Protagonist.anims.play('ProtagonistWalkDown');
+      break;
+
+    default:
+      break;
+  }
 }
 
 function setupAnimation(entity, start, end, movement) {
@@ -203,8 +226,8 @@ function findSpawn(playerSafeDist) {
   // A function to prevent the Enemies from 
   // spawning too close to the protagonist
   for (var i = 0; i < 100; i++) {
-    var x = Phaser.Math.Between(0, gameWidth);
-    var y = Phaser.Math.Between(0, gameHeight);
+    var x = Phaser.Math.Between(wallLeft, wallRight);
+    var y = Phaser.Math.Between(wallTop, wallBottom);
 
     var locationFound = true;
 
@@ -336,7 +359,8 @@ function fireBullet(cx, cy, dirnX, dirnY) {
 };
 
 function Projectile(descr) {
-
+  if (descr.velX == 0 && descr.velY == 0)
+    descr.velX = 0;
   var newSprite;
   switch (true) {
     case Protagonist.hasShotgun:
@@ -424,8 +448,9 @@ function Projectile(descr) {
       graphics.fillCircleShape(circle);
       var texture = graphics.generateTexture('bullet');
       newSprite = _scene.add.sprite(descr.x, descr.y, 'bullet');
-      newSprite.velX = 10 * descr.velX;
-      newSprite.velY = 10 * descr.velY;
+      newSprite.velX = descr.velX;
+      newSprite.velY = descr.velY;
+      newSprite.setScale(.7);
       graphics.destroy();
   }
   return newSprite;

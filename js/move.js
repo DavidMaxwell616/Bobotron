@@ -3,8 +3,8 @@ var _scene;
 function moveEntities(scene) {
   _scene = scene;
   moveProtagonist();
-  moveFamily()
-  moveEnemies();
+  // moveFamily()
+  // moveEnemies();
 
 }
 
@@ -108,8 +108,14 @@ function findClosestFamilyMember(posX, posY) {
 };
 
 function moveProtagonist() {
-  Protagonist.x += Protagonist.velX;
-  Protagonist.y += Protagonist.velY;
+  isMoving = (Protagonist.velX != 0 || Protagonist.velY != 0)
+  if (!isMoving && Protagonist.anims != undefined && Protagonist.anims.currentAnim != null) {
+    Protagonist.anims.pause(Protagonist.anims.currentAnim.frames[0]);
+  } else {
+    Protagonist.x += Protagonist.velX;
+    Protagonist.y += Protagonist.velY;
+  }
+
 }
 
 function moveBullets(du) {
