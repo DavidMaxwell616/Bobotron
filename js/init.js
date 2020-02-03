@@ -69,6 +69,7 @@ function findClosestFamilyMember(posX, posY) {
 }
 
 function initProtagonist() {
+  var _bulletVel = 10;
   Protagonist = _scene.add.sprite(gameWidth / 2, gameHeight / 2, 'spriteMap', 'Protagonist_07.png');
   Protagonist.speed = 1;
   Protagonist.name = 'Protagonist';
@@ -94,26 +95,26 @@ function initProtagonist() {
   });
   //Protagonist shoots
   _scene.input.keyboard.on('keydown_Q', function (event) {
-    fireBullet(Protagonist.x, Protagonist.y, -1, -1)
+    fireBullet(Protagonist.x, Protagonist.y, -_bulletVel, -_bulletVel)
   });
 
   _scene.input.keyboard.on('keydown_W', function (event) {
-    fireBullet(Protagonist.x, Protagonist.y, 0, -1)
+    fireBullet(Protagonist.x, Protagonist.y, 0, -_bulletVel)
   });
 
   _scene.input.keyboard.on('keydown_E', function (event) {
-    fireBullet(Protagonist.x, Protagonist.y, 1, -1)
+    fireBullet(Protagonist.x, Protagonist.y, _bulletVel, -_bulletVel)
   });
 
   _scene.input.keyboard.on('keydown_A', function (event) {
-    fireBullet(Protagonist.x, Protagonist.y, -1, 0)
+    fireBullet(Protagonist.x, Protagonist.y, -_bulletVel, 0)
   });
   _scene.input.keyboard.on('keydown_D', function (event) {
-    fireBullet(Protagonist.x, Protagonist.y, 1, 0)
+    fireBullet(Protagonist.x, Protagonist.y, _bulletVel, 0)
   });
 
   _scene.input.keyboard.on('keydown_Z', function (event) {
-    fireBullet(Protagonist.x, Protagonist.y, -1, 1)
+    fireBullet(Protagonist.x, Protagonist.y, -_bulletVel, _bulletVel)
   });
 
   _scene.input.keyboard.on('keydown_X', function (event) {
@@ -258,6 +259,7 @@ function initGrunts(number) {
     grunt.maxSpeed = 3;
     grunt.maxRageReachedTime = 40 * SECS_TO_NOMINALS;
     grunt.name = 'Grunt';
+    grunt.takeBulletHit = true;
     setupAnimation(grunt, 1, 3, 'Walk');
     Enemies.add(grunt);
   }
@@ -437,20 +439,22 @@ function Projectile(descr) {
       //  break;
     default:
       var graphics = _scene.add.graphics();
-      var circle = new Phaser.Geom.Circle(descr.x, descr.y, 6);
-      graphics.fillStyle(0xffffff, .5);
+      var circle = new Phaser.Geom.Circle(3, 3, 6);
+      graphics.fillStyle("white", .5);
       graphics.fillCircleShape(circle);
-      circle = new Phaser.Geom.Circle(descr.x, descr.y, 4);
+      circle = new Phaser.Geom.Circle(3, 3, 4);
       graphics.fillStyle(0x32cd32, .8);
       graphics.fillCircleShape(circle);
-      circle = new Phaser.Geom.Circle(descr.x, descr.y, 2);
+      circle = new Phaser.Geom.Circle(3, 3, 2);
       graphics.fillStyle(0xffffff, 1);
       graphics.fillCircleShape(circle);
-      var texture = graphics.generateTexture('bullet');
+      var texture = graphics.generateTexture('bullet', 6, 6);
       newSprite = _scene.add.sprite(descr.x, descr.y, 'bullet');
       newSprite.velX = descr.velX;
       newSprite.velY = descr.velY;
+      newSprite.lifeSpan = 100;
       newSprite.setScale(.7);
+      newSprite.setOrigin(.5);
       graphics.destroy();
   }
   return newSprite;
@@ -501,10 +505,10 @@ function Particle(descr) {
     alpha = lifeSpan / fadeThresh;
     radius = radius * lifeSpan / fadeThresh;
   }
-  var circle = new Phaser.Geom.Circle(descr.x, descr.y, 3);
+  var circle = new Phaser.Geom.Circle(0, 0, 3);
   graphics.fillStyle(descr.color, alpha);
   graphics.fillCircleShape(circle);
-  var texture = graphics.generateTexture('particle');
+  var texture = graphics.generateTexture('particle', 6, 6);
   newSprite = _scene.add.sprite(descr.x, descr.y, 'particle');
   newSprite.velX = descr.velX;
   newSprite.velY = descr.velY;

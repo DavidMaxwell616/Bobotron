@@ -8,6 +8,12 @@ var config = {
     create: create,
     update: update,
   },
+  physics: {
+    default: 'arcade',
+    arcade: {
+      debug: false
+    }
+  },
 };
 
 var game = new Phaser.Game(config);
@@ -25,11 +31,18 @@ function create() {
   _changingTimer = 2 * SECS_TO_NOMINALS;
   makeColorArray();
 
-  Family = this.add.group();
-  Enemies = this.add.group();
-  Bullets = this.add.group();
+  Family = this.physics.add.group();
+  Enemies = this.physics.add.group();
+  Bullets = this.physics.add.group();
+  Particles = this.physics.add.group();
   maxxdaddy = this.add.image(0, 0, 'maxxdaddy')
   maxxdaddy.setPosition(gameWidth - maxxdaddy.width, gameHeight - maxxdaddy.height).setOrigin(0);
+  this.physics.add.collider(
+    Bullets,
+    Enemies,
+    function (bullet, enemy) {
+      bulletHitEnemy(bullet, enemy);
+    });
   return;
   playerXSpeed = 0;
   playerYSpeed = 0;
@@ -41,23 +54,7 @@ function create() {
   loadLevel(this, curLevel);
 
 
-  this.input.keyboard.on('keydown_SPACE', function (event) {
-    bulletDirection = {
-      xv: playerXSpeed,
-      yv: playerYSpeed
-    };
-    var frame = 3 + bulletDirection.yv;
-    player.anims.pause(player.anims.currentAnim.frames[frame]);
-    var bullet = this.add.sprite(0, 0, 'bullet');
-    shootBullet(this, bullet, bulletDirection);
-    playerXSpeed = 0;
-    playerYSpeed = 0;
-    shooting = true;
-  }, this);
 
-  this.input.keyboard.on('keyup_SPACE', function (event) {
-    shooting = false;
-  });
 
 
 }

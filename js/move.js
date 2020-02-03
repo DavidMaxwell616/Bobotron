@@ -5,7 +5,7 @@ function moveEntities(scene) {
   moveProtagonist();
   // moveFamily()
   // moveEnemies();
-
+  moveBullets();
 }
 
 function moveEnemies() {
@@ -118,67 +118,110 @@ function moveProtagonist() {
 
 }
 
-function moveBullets(du) {
+function moveBullets() {
   var bullets = Bullets.getChildren();
   bullets.forEach(bullet => {
     // Handle death
-    bullet.lifeSpan -= du;
+    // console.log(bullet.lifeSpan);
+    bullet.lifeSpan -= 1;
     if (bullet.lifeSpan < 0) bullet.destroy();
-
-    if (edgeBounce()) {
-      if (Player.hasMachineGun) spawnFragment(5, "cyan");
-      if (Player.hasShotgun) spawnFragment(5, "orange");
-      if (!Player.hasMachineGun && !Player.hasShotgun) spawnFragment(5, "lime");
+    if (edgeBounce(bullet)) {
+      //  if (Protagonist.hasMachineGun) spawnFragment(5, "cyan");
+      //  if (Protagonist.hasShotgun) spawnFragment(5, "orange");
+      //if (!Protagonist.hasMachineGun && !Protagonist.hasShotgun) spawnFragment(5, "lime");
       bullet.destroy();
     }
 
     // Update positions
-    bullet.velX = bullet.bulletVel * bullet.dirnX;
-    bullet.velY = bullet.bulletVel * bullet.dirnY;
 
-    bullet.prevX = bullet.x;
-    bullet.prevY = bullet.y;
+    // bullet.velX = bullet.bulletVel * bullet.dirnX;
+    // bullet.velY = bullet.bulletVel * bullet.dirnY;
 
-    bullet.x += bullet.velX * du;
-    bullet.y += bullet.velY * du;
+    // bullet.prevX = bullet.x;
+    // bullet.prevY = bullet.y;
 
-    bullet.rotation += 1 * du;
+    bullet.x += bullet.velX;
+    bullet.y += bullet.velY;
+
+    // bullet.rotation += 1 * du;
     // bullet.rotation = wrapRange(bullet.rotation,
     //                                0, consts.FULL_CIRCLE);
 
     // Handle collisions
-    var hitEntity = findHitEntity(bullet);
-    if (hitEntity) {
-      // The bulletVel check is a hack to stop the shotgun bullets 
-      // from killing each other on spawn
-      // if (!hitEntity.bulletVel) {
-      //   var canTakeHit = hitEntity.takeBulletHit;
-      //   var canFriendlyHit = hitEntity.takeFriendlyHit;
-      //   var descr = {
-      //     velX: this.velX,
-      //     velY: this.velY,
-      //     du: du
-      //   };
-      // if (canTakeHit || (g_friendlyFire && canFriendlyHit)) {
-      //   if (canTakeHit) {
-      //     // Enemy takes the hit and removed from collision check
-      //     canTakeHit.call(hitEntity, descr);
-      //     spatialManager.unregister(hitEntity);
-      //   } else {
-      //     canFriendlyHit.call(hitEntity);
-      //     spatialManager.unregister(hitEntity);
-      //   }
-      //   if (Player.hasMachineGun) this.spawnFragment(5, "cyan");
-      //   if (Player.hasShotgun) this.spawnFragment(5, "orange");
-      //   if (!Player.hasMachineGun && !Player.hasShotgun) this.spawnFragment(5, "lime");
-      //   return entityManager.KILL_ME_NOW;
-      // }
-    }
+    // var hitEntity = findHitEntity(bullet);
+    // if (hitEntity) {
+    //   console.log(hitEntity);
+    //   var canTakeHit = hitEntity.takeBulletHit;
+
+    // The bulletVel check is a hack to stop the shotgun bullets 
+    // from killing each other on spawn
+    // if (!hitEntity.bulletVel) {
+    //   var canFriendlyHit = hitEntity.takeFriendlyHit;
+    //   var descr = {
+    //     velX: this.velX,
+    //     velY: this.velY,
+    //     du: du
+    //   };
+    //   if (canTakeHit || (g_friendlyFire && canFriendlyHit)) {
+    //     if (canTakeHit) {
+    //       // Enemy takes the hit and removed from collision check
+    //       canTakeHit.call(hitEntity, descr);
+    //       spatialManager.unregister(hitEntity);
+    //     } else {
+    //       canFriendlyHit.call(hitEntity);
+    //       spatialManager.unregister(hitEntity);
+    //     }
+    //     if (Player.hasMachineGun) this.spawnFragment(5, "cyan");
+    //     if (Player.hasShotgun) this.spawnFragment(5, "orange");
+    //     if (!Player.hasMachineGun && !Player.hasShotgun) this.spawnFragment(5, "lime");
+    //     return entityManager.KILL_ME_NOW;
+    //   }
+    //    }
   });
 
 };
 
+function bulletHitEnemy(bullet, enemy) {
+  var canTakeHit = enemy.takeBulletHit;
+  if (canTakeHit) {
+    score += enemy.value;
+    makeExplosion(enemy);
+    enemy.destroy();
+    bullet.destroy();
+  }
+}
 
+function makeExplosion(enemy) {
+  for (var i = 0; i < colors.length; i++) {
+    var colorDefinition = colors[i];
+    var numberOfParticles = 10; //colorDefinition.ratio * getNumberOfParticles();
+    for (var j = 0; j < numberOfParticles; j++) {
+      var particle = {
+        dirn: Math.random() * 2 * Math.PI,
+        speed: Math.random() * 4,
+        cx: enemy.x,
+        cy: enemy.y,
+        color: colorDefinition,
+        radius: 1
+      };
+      createParticle(particle);
+    }
+  }
+};
+
+function getNumberOfParticles() {
+  var maxNumParticlesOnScreen = 4000;
+  var maxNumParticles = 200;
+  var minNumParticles = 20;
+
+  var numEntities = Enemies.children.size;
+  var numParticles = maxNumParticlesOnScreen / numEntities;
+  // Capping
+  var numParticles = Math.max(numParticles, minNumParticles);
+  var numParticles = Math.min(numParticles, maxNumParticles);
+
+  return numParticles;
+};
 
 function edgeBounce(entity) {
   var bounceHappened = false;
@@ -186,8 +229,7 @@ function edgeBounce(entity) {
   var velY = entity.velY;
   var cx = entity.x;
   var cy = entity.y;
-  var r = getRadius(entity);
-
+  var r = entity.width / 2;
   if (cx + velX > wallRight - r || cx + velX < wallLeft + r) {
     bounceHappened = true;
     entity.velX = -entity.velX;
@@ -197,31 +239,6 @@ function edgeBounce(entity) {
     entity.velY = -entity.velY;
   }
   return bounceHappened;
-};
-
-function getRadius(entity) {
-  return (entity.width / 2) * 0.9;
-};
-
-function findHitEntity(bullet) {
-  var pos = this.getPosition();
-  return findEntityInRange(
-    pos.x, pos.y, getRadius()
-  );
-};
-
-function findEntityInRange(x, y, radius) {
-  // for-in loop used due to sparseness of the _entities array.
-  var members = Enemies.getChildren();
-  members.forEach(entity => {
-    // Circle-based distance checking
-    var distSq = distSq(x, y, entity.x, entity.y);
-    var limSq = square(radius + getRadius(entity));
-    if (distSq < limSq) {
-      return entity;
-    }
-  });
-  return null;
 };
 
 function moveParticles(du) {
