@@ -4,8 +4,9 @@ function moveEntities(scene) {
   _scene = scene;
   moveProtagonist();
   // moveFamily()
-  // moveEnemies();
+  //moveEnemies();
   moveBullets();
+  moveParticles();
 }
 
 function moveEnemies() {
@@ -24,7 +25,8 @@ function moveEnemies() {
 }
 
 function moveGrunt(grunt, du) {
-  rage(grunt, du);
+  var du = 1;
+  //rage(grunt, du);
   var xOffset = Protagonist.x - grunt.x;
   var yOffset = Protagonist.y - grunt.y;
 
@@ -194,7 +196,7 @@ function bulletHitEnemy(bullet, enemy) {
 function makeExplosion(enemy) {
   for (var i = 0; i < colors.length; i++) {
     var colorDefinition = colors[i];
-    var numberOfParticles = 10; //colorDefinition.ratio * getNumberOfParticles();
+    var numberOfParticles = 10; //getNumberOfParticles();
     for (var j = 0; j < numberOfParticles; j++) {
       var particle = {
         dirn: Math.random() * 2 * Math.PI,
@@ -202,7 +204,7 @@ function makeExplosion(enemy) {
         cx: enemy.x,
         cy: enemy.y,
         color: colorDefinition,
-        radius: 1
+        radius: 5
       };
       createParticle(particle);
     }
@@ -219,7 +221,6 @@ function getNumberOfParticles() {
   // Capping
   var numParticles = Math.max(numParticles, minNumParticles);
   var numParticles = Math.min(numParticles, maxNumParticles);
-
   return numParticles;
 };
 
@@ -241,16 +242,19 @@ function edgeBounce(entity) {
   return bounceHappened;
 };
 
-function moveParticles(du) {
+function moveParticles() {
+  var du = 1;
+  var particles = Particles.getChildren();
+  particles.forEach(particle => {
+    //    particle.lifeSpan -= du;
+    //    if (particle.lifeSpan < 0) particle.destroy;
+    //console.log(particle.dirn);
+    if (particle.dirn) {
+      particle.velX = Math.cos(particle.dirn) * particle.speed;
+      particle.velY = Math.sin(particle.dirn) * particle.speed;
+    }
 
-  this.lifeSpan -= du;
-  if (this.lifeSpan < 0) particle.destroy;
-
-  if (this.dirn) {
-    this.velX = Math.cos(this.dirn) * this.speed;
-    this.velY = Math.sin(this.dirn) * this.speed;
-  }
-
-  this.x += this.velX * du;
-  this.y += this.velY * du;
+    particle.x += particle.velX * du;
+    particle.y += particle.velY * du;
+  });
 };

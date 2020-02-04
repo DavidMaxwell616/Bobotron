@@ -63,7 +63,14 @@ function makeColorArray() {
   }
 };
 
+function addMultiplier() {
+  if (multiplier < 5)
+    multiplier += 1;
+};
 
+function resetMultiplier() {
+  multiplier = 1;
+};
 
 // LEVEL GENERATOR
 // ===============

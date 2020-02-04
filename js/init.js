@@ -25,6 +25,22 @@ var _levelSpecs = [
   [5, 6, 10, 4]
 ];
 
+var scoreValues = {
+  Electrode: 5,
+  Spark: 25,
+  Shell: 50,
+  CruiseMissile: 75,
+  Prog: 100,
+  Grunt: 100,
+  Enforcer: 200,
+  Tank: 300,
+  Brain: 500,
+  Spheroid: 1000,
+  Quark: 1000,
+  Family: 1000,
+  Powerup: 300
+};
+
 function startLevel(scene) {
   // Create a fresh level
   _scene = scene;
@@ -252,13 +268,15 @@ function initGrunts(number) {
   for (let index = 0; index < number; index++) {
     var playerSafeDist = 120;
     var descr = findSpawn(playerSafeDist);
-    var grunt = _scene.add.sprite(descr.cx, descr.cy, 'spriteMap', 'Grunt_01.png');
+    var x = Protagonist.x - index;
+    var grunt = _scene.add.sprite(x, descr.cy, 'spriteMap', 'Grunt_01.png');
     grunt.stepsize = 3;
     grunt.baseSpeed = 1;
     grunt.speed = 1;
     grunt.maxSpeed = 3;
     grunt.maxRageReachedTime = 40 * SECS_TO_NOMINALS;
     grunt.name = 'Grunt';
+    grunt.value = scoreValues.Grunt * multiplier;
     grunt.takeBulletHit = true;
     setupAnimation(grunt, 1, 3, 'Walk');
     Enemies.add(grunt);
@@ -349,8 +367,10 @@ function fireSpark(cx, cy, angle) {
   Bullets.add(spark);
 };
 
-
 function fireBullet(cx, cy, dirnX, dirnY) {
+  if (ammo == 0)
+    return;
+  ammo--
   Bullets.add(new Projectile({
     x: cx,
     y: cy,
@@ -497,21 +517,24 @@ function createParticle(descr) {
 
 function Particle(descr) {
   var newSprite;
-  var lifeSpan = SECS_TO_NOMINALS / 2;
-  var alpha;
+  Particle.lifeSpan = SECS_TO_NOMINALS / 2;
+  var alpha = 1;
   var fadeThresh = 3 * Particle.lifeSpan / 4;
   var graphics = _scene.add.graphics();
-  if (lifeSpan < fadeThresh) {
-    alpha = lifeSpan / fadeThresh;
-    radius = radius * lifeSpan / fadeThresh;
+  if (Particle.lifeSpan < fadeThresh) {
+    alpha = Particle.lifeSpan / fadeThresh;
+    descr.radius = descr.radius * Particle.lifeSpan / fadeThresh;
   }
-  var circle = new Phaser.Geom.Circle(0, 0, 3);
-  graphics.fillStyle(descr.color, alpha);
+  var circle = new Phaser.Geom.Circle(0, 0, descr.radius);
+  var color = descr.color.replace("#", "0x");
+  graphics.fillStyle(color, alpha);
   graphics.fillCircleShape(circle);
-  var texture = graphics.generateTexture('particle', 6, 6);
-  newSprite = _scene.add.sprite(descr.x, descr.y, 'particle');
-  newSprite.velX = descr.velX;
-  newSprite.velY = descr.velY;
+  var texture = graphics.generateTexture('particle', descr.radius * 2, descr.radius * 2);
+  newSprite = _scene.add.sprite(descr.cx, descr.cy, 'particle');
+  newSprite.velX = 1;
+  newSprite.velY = 1;
+  newSprite.speed = 10;
+  newSprite.dirn = descr.dirn;
   graphics.destroy();
   return newSprite;
 }

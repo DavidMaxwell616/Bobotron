@@ -60,9 +60,11 @@ function create() {
 }
 
 function updateStats() {
-  levelText.setText('LEVEL: ' + curLevel);
+  levelText.setText('LEVEL: ' + level);
   scoreText.setText('SCORE: ' + score);
-  livesText.setText('LIVES: ' + lives);
+  ammoText.setText('AMMO: ' + ammo);
+  shieldText.setText('SHIELD: ' + Math.ceil(shieldTime / SECS_TO_NOMINALS));
+  //livesText.setText('LIVES: ' + lives);
 }
 
 function renderLevelChanger(scene) {
@@ -237,6 +239,7 @@ function update() {
     levelRendered = true;
   } else {
     moveEntities(this);
+    updateStats()
   }
   // if (isInMenu) {
 
@@ -281,7 +284,7 @@ function renderLevel(scene) {
   graphics.fillRect(0, 0, gameWidth, wallTop);
 
   // Display the score
-  var scoretxt = "Score: " + score;
+  scoretxt = "Score: " + score;
   scoreText = scene.add.text(
     5,
     5,
@@ -304,7 +307,7 @@ function renderLevel(scene) {
 
   //display the multiplier and the level
   var disp = "X" + multiplier + "  Level: " + level;
-  scoreText = scene.add.text(
+  levelText = scene.add.text(
     gameWidth / 2 - 140, 5,
     disp, {
       fontFamily: 'Arial',
