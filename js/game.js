@@ -43,6 +43,13 @@ function create() {
     function (bullet, enemy) {
       bulletHitEnemy(bullet, enemy);
     });
+
+  this.physics.add.collider(
+    Enemies,
+    Family,
+    function (enemy, member) {
+      enemyHitFamily(enemy, member);
+    });
   return;
   playerXSpeed = 0;
   playerYSpeed = 0;
@@ -241,29 +248,29 @@ function update() {
     moveEntities(this);
     updateStats()
   }
-  // if (isInMenu) {
+  if (isInMenu) {
 
-  //   renderMenu(this);
+    renderMenu(this);
 
-  // } else if (isChangingLevel &&
-  //   !isRefreshingLevel) {
+  } else if (isChangingLevel &&
+    !isRefreshingLevel) {
 
-  //   renderLevel(this);
-  //   //renderLevelChanger(this);
+    renderLevel(this);
+    //renderLevelChanger(this);
 
-  // } else if (isGameOver) {
+  } else if (isGameOver) {
 
-  //   renderGameOver();
+    renderGameOver();
 
-  // } else {
-  //   renderLevel(this);
-  //   //entityManager.render(ctx);
-  //   //renderCrosshair(ctx);
-  //   //if (g_Debug) spatialManager.render(ctx);
-  //   if (isRefreshingLevel) {
-  //     renderLevelChanger(this);
-  //   }
-  // }
+  } else {
+    renderLevel(this);
+    //entityManager.render(ctx);
+    //renderCrosshair(ctx);
+    //if (g_Debug) spatialManager.render(ctx);
+    if (isRefreshingLevel) {
+      renderLevelChanger(this);
+    }
+  }
 
 
   reduceTimer(1);

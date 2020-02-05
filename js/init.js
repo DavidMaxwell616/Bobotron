@@ -151,31 +151,6 @@ function initPeopleAnimations(entity) {
 
 }
 
-
-function movePlayer(dir) {
-  switch (dir) {
-    case 'left':
-      Protagonist.velX = Protagonist.velX <= 0 ? -Protagonist.speed : 0;
-      Protagonist.anims.play('ProtagonistWalkLeft');
-      break;
-    case 'right':
-      Protagonist.velX = Protagonist.velX >= 0 ? Protagonist.speed : 0;
-      Protagonist.anims.play('ProtagonistWalkRight');
-      break;
-    case 'up':
-      Protagonist.velY = Protagonist.velY <= 0 ? -Protagonist.speed : 0;
-      Protagonist.anims.play('ProtagonistWalkUp');
-      break;
-    case 'down':
-      Protagonist.velY = Protagonist.velY >= 0 ? Protagonist.speed : 0;
-      Protagonist.anims.play('ProtagonistWalkDown');
-      break;
-
-    default:
-      break;
-  }
-}
-
 function setupAnimation(entity, start, end, movement) {
   var frameNames = _scene.anims.generateFrameNames('spriteMap', {
     start: start,
@@ -268,11 +243,10 @@ function initGrunts(number) {
   for (let index = 0; index < number; index++) {
     var playerSafeDist = 120;
     var descr = findSpawn(playerSafeDist);
-    var x = Protagonist.x - index;
-    var grunt = _scene.add.sprite(x, descr.cy, 'spriteMap', 'Grunt_01.png');
+    var grunt = _scene.add.sprite(descr.cx, descr.cy, 'spriteMap', 'Grunt_01.png');
     grunt.stepsize = 3;
     grunt.baseSpeed = 1;
-    grunt.speed = 1;
+    grunt.speed = .5;
     grunt.maxSpeed = 3;
     grunt.maxRageReachedTime = 40 * SECS_TO_NOMINALS;
     grunt.name = 'Grunt';

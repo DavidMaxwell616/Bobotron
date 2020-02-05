@@ -2,7 +2,7 @@ const gameWidth = 900;
 const gameHeight = 500;
 
 let shieldTime = 20;
-
+let skull;
 let multiplier = 1;
 let ammo = 500;
 let graphics;

@@ -3,8 +3,8 @@ var _scene;
 function moveEntities(scene) {
   _scene = scene;
   moveProtagonist();
-  // moveFamily()
-  //moveEnemies();
+  moveFamily()
+  moveEnemies();
   moveBullets();
   moveParticles();
 }
@@ -61,6 +61,30 @@ function rage(enemy, du) {
   enemy.speed += (enemy.maxSpeed - enemy.baseSpeed) * timeFraction;
   enemy.speed = Math.min(enemy.speed, enemy.maxSpeed);
 };
+
+function movePlayer(dir) {
+  switch (dir) {
+    case 'left':
+      Protagonist.velX = Protagonist.velX <= 0 ? -Protagonist.speed : 0;
+      Protagonist.anims.play('ProtagonistWalkLeft');
+      break;
+    case 'right':
+      Protagonist.velX = Protagonist.velX >= 0 ? Protagonist.speed : 0;
+      Protagonist.anims.play('ProtagonistWalkRight');
+      break;
+    case 'up':
+      Protagonist.velY = Protagonist.velY <= 0 ? -Protagonist.speed : 0;
+      Protagonist.anims.play('ProtagonistWalkUp');
+      break;
+    case 'down':
+      Protagonist.velY = Protagonist.velY >= 0 ? Protagonist.speed : 0;
+      Protagonist.anims.play('ProtagonistWalkDown');
+      break;
+
+    default:
+      break;
+  }
+}
 
 function moveFamily() {
   var members = Family.getChildren();
@@ -124,7 +148,6 @@ function moveBullets() {
   var bullets = Bullets.getChildren();
   bullets.forEach(bullet => {
     // Handle death
-    // console.log(bullet.lifeSpan);
     bullet.lifeSpan -= 1;
     if (bullet.lifeSpan < 0) bullet.destroy();
     if (edgeBounce(bullet)) {
@@ -182,6 +205,14 @@ function moveBullets() {
   });
 
 };
+
+function enemyHitFamily(enemy, member) {
+  var skull = _scene.add.sprite(member.x, member.y, 'spriteMap', 'Skull.png');
+  member.destroy();
+  var timedEvent = _scene.time.delayedCall(3000, function () {
+    skull.destroy();
+  }, [], _scene);
+}
 
 function bulletHitEnemy(bullet, enemy) {
   var canTakeHit = enemy.takeBulletHit;
