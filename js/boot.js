@@ -99,3 +99,8 @@ var Enemies;
 var Bullets;
 var Particles;
 var isMoving = false;
+var isChangingLevel = false;
+var isRefreshingLevel = false;
+var changingTimer = 0;
+var isInMenu = true;
+var isGameOver = false;

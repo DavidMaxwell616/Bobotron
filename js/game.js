@@ -17,18 +17,15 @@ var config = {
 };
 
 var game = new Phaser.Game(config);
-var _isChangingLevel = false;
-var _isRefreshingLevel = false;
-var _changingTimer = 0;
-var isInMenu = true;
-var isGameOver = false;
+
+var _scene;
 
 function create() {
   score = 0;
-
+  _scene = this;
   graphics = this.add.graphics();
-  _isRefreshingLevel = true;
-  _changingTimer = 2 * SECS_TO_NOMINALS;
+  isRefreshingLevel = true;
+  changingTimer = 2 * SECS_TO_NOMINALS;
   makeColorArray();
 
   Family = this.physics.add.group();
@@ -50,19 +47,6 @@ function create() {
     function (enemy, member) {
       enemyHitFamily(enemy, member);
     });
-  return;
-  playerXSpeed = 0;
-  playerYSpeed = 0;
-  this.world.setBounds(0, 0, this.game.config.width, this.game.config.height);
-  //maxxdaddy.visible = false;
-
-  numGuards = curLevel + 4;
-  initEnemies(this);
-  loadLevel(this, curLevel);
-
-
-
-
 
 }
 
@@ -74,21 +58,20 @@ function updateStats() {
   //livesText.setText('LIVES: ' + lives);
 }
 
-function renderLevelChanger(scene) {
+function renderLevelChanger() {
   var halfWidth = gameWidth / 2;
   var halfHeight = (gameHeight - wallTop) / 2;
   var yMiddle = wallTop + halfHeight;
   var layerOffsetX = 5;
   var layerOffsetY = halfHeight / (halfWidth / layerOffsetX);
   var layers = halfWidth / layerOffsetX;
-
-  if (_isRefreshingLevel) {
+  if (isRefreshingLevel) {
 
     var alpha;
-    if (_changingTimer > SECS_TO_NOMINALS) {
-      alpha = (2 * SECS_TO_NOMINALS - _changingTimer) / SECS_TO_NOMINALS;
+    if (changingTimer > SECS_TO_NOMINALS) {
+      alpha = (2 * SECS_TO_NOMINALS - changingTimer) / SECS_TO_NOMINALS;
     } else {
-      alpha = _changingTimer / SECS_TO_NOMINALS;
+      alpha = changingTimer / SECS_TO_NOMINALS;
       if (alpha < 0) alpha = 0;
       // entityManager.clearPartial();
       // entityManager.resetPos();
@@ -102,9 +85,9 @@ function renderLevelChanger(scene) {
 
   } else {
 
-    if (_changingTimer > SECS_TO_NOMINALS) {
+    if (changingTimer > SECS_TO_NOMINALS) {
 
-      var range = (2 * SECS_TO_NOMINALS - _changingTimer) / SECS_TO_NOMINALS;
+      var range = (2 * SECS_TO_NOMINALS - changingTimer) / SECS_TO_NOMINALS;
       var currentLayer = Math.floor(range * layers);
 
       for (var i = 1; i < currentLayer; i++) {
@@ -119,7 +102,7 @@ function renderLevelChanger(scene) {
         graphics.fillRectShape(rect);
       }
     } else {
-      var range = _changingTimer / SECS_TO_NOMINALS;
+      var range = changingTimer / SECS_TO_NOMINALS;
       var currentLayer = Math.ceil(range * layers);
 
       for (var i = 1; i < currentLayer; i++) {
@@ -134,7 +117,7 @@ function renderLevelChanger(scene) {
         graphics.fillRectShape(rect);
       }
 
-      range = (SECS_TO_NOMINALS - _changingTimer) / SECS_TO_NOMINALS;
+      range = (SECS_TO_NOMINALS - changingTimer) / SECS_TO_NOMINALS;
       currentLayer = Math.ceil(range * layers);
 
       graphics.fillStyle(0x000000, 1);
@@ -147,30 +130,22 @@ function renderLevelChanger(scene) {
 
     }
   }
-  // console.log(_changingTimer);
   //graphics.restore();
   // graphics.clear();
   // Reset changing timer when level changing is complete
-  if (_changingTimer < 0) {
-    _isChangingLevel = false;
-    _isRefreshingLevel = false;
-    _changingTimer = 2 * SECS_TO_NOMINALS;
+  if (changingTimer < 0) {
+    isChangingLevel = false;
+    isRefreshingLevel = false;
+    changingTimer = 2 * SECS_TO_NOMINALS;
   }
 };
 
 function reduceTimer(du) {
-  _changingTimer -= du;
+  changingTimer -= du;
 };
 
-function isChangingLevel() {
-  return _isChangingLevel;
-};
 
-function isRefreshingLevel() {
-  return _isRefreshingLevel;
-};
-
-function renderMenu(scene) {
+function renderMenu() {
   var str = "ROBOTRON";
   var re = "";
   if (str == undefined) str = "";
@@ -192,7 +167,7 @@ function renderMenu(scene) {
   graphics.lineTo(hw * 2, hh * 1.5);
   graphics.stroke();
 
-  var titleText = scene.add.text(
+  var titleText = _scene.add.text(
     hw,
     hh,
     str, {
@@ -202,7 +177,7 @@ function renderMenu(scene) {
     },
   );
   titleText.setOrigin(0.5, 0.5);
-  var titleText2 = scene.add.text(
+  var titleText2 = _scene.add.text(
     hw,
     hh * 3,
     str2, {
@@ -212,10 +187,11 @@ function renderMenu(scene) {
     },
   );
   titleText2.setOrigin(0.5, 0.5);
-  scene.input.keyboard.on('keydown_R', function (event) {
+  _scene.input.keyboard.on('keydown_R', function (event) {
     isInMenu = false;
     titleText.visible = false;
     titleText2.visible = false;
+    isChangingLevel = true;
   });
 
   // graphics.font = "bold 20px sans-serif";
@@ -240,40 +216,44 @@ function renderGameOver() {
 // is called every frame
 function update() {
 
-  if (!levelRendered) {
-    renderLevel(this);
-    startLevel(this);
-    levelRendered = true;
-  } else {
-    moveEntities(this);
-    updateStats()
-  }
   if (isInMenu) {
-
-    renderMenu(this);
-
-  } else if (isChangingLevel &&
-    !isRefreshingLevel) {
-
-    renderLevel(this);
-    //renderLevelChanger(this);
-
-  } else if (isGameOver) {
-
-    renderGameOver();
-
+    renderMenu();
   } else {
-    renderLevel(this);
-    //entityManager.render(ctx);
-    //renderCrosshair(ctx);
-    //if (g_Debug) spatialManager.render(ctx);
-    if (isRefreshingLevel) {
-      renderLevelChanger(this);
+    if (Enemies.children.size > 0 && level >= 1) {
+      level++;
+      renderLevelChanger();
+      reduceTimer(1);
+    } else if (isChangingLevel || isRefreshingLevel) {
+      //renderLevel();
+      renderLevelChanger();
+      reduceTimer(1);
+
+    } else if (!levelRendered) {
+      renderLevel();
+      startLevel(this);
+      levelRendered = true;
+    } else if (levelRendered) {
+      moveEntities(this);
+      updateStats();
+      reduceTimer(1);
+    } else if (isGameOver) {
+
+      renderGameOver();
+
     }
   }
+  // }
+  // else      renderLevel();
+  //     //entityManager.render(ctx);
+  //     //renderCrosshair(ctx);
+  //     //if (g_Debug) spatialManager.render(ctx);
+  //     if (isRefreshingLevel) {
+  //       renderLevelChanger();
+  //     }
+  //   }
 
 
-  reduceTimer(1);
+
 
 }
 
@@ -284,7 +264,7 @@ function restart() {
   game.state.restart();
 }
 
-function renderLevel(scene) {
+function renderLevel() {
   graphics.clear();
   // Display score bar
   graphics.fillStyle(0x000000, 1);
@@ -292,7 +272,7 @@ function renderLevel(scene) {
 
   // Display the score
   scoretxt = "Score: " + score;
-  scoreText = scene.add.text(
+  scoreText = _scene.add.text(
     5,
     5,
     scoretxt, {
@@ -302,19 +282,10 @@ function renderLevel(scene) {
     },
   );
 
-  function addMultiplier() {
-    if (multiplier < 5) {
-      multiplier += 1;
-    }
-  };
-
-  function resetMultiplier() {
-    multiplier = 1;
-  };
 
   //display the multiplier and the level
   var disp = "X" + multiplier + "  Level: " + level;
-  levelText = scene.add.text(
+  levelText = _scene.add.text(
     gameWidth / 2 - 140, 5,
     disp, {
       fontFamily: 'Arial',
@@ -325,7 +296,7 @@ function renderLevel(scene) {
 
   // Display ammo
   var text = "Ammo: " + ammo;
-  ammoText = scene.add.text(
+  ammoText = _scene.add.text(
     gameWidth / 2, 5,
     text, {
       fontFamily: 'Arial',
@@ -335,7 +306,7 @@ function renderLevel(scene) {
   );
   // Display shield
   var moretxt = "Shield: " + Math.ceil(shieldTime / SECS_TO_NOMINALS);
-  shieldText = scene.add.text(
+  shieldText = _scene.add.text(
     gameWidth / 2 + 130, 5,
     moretxt, {
       fontFamily: 'Arial',
@@ -346,7 +317,7 @@ function renderLevel(scene) {
 
   // Display remaining lives
   for (var i = 1; i < lives; i++) {
-    scene.add.image(Extralife,
+    _scene.add.image(Extralife,
       gameWidth - i * 20,
       15
     );
@@ -364,6 +335,16 @@ function renderLevel(scene) {
   rect = new Phaser.Geom.Rectangle(wallRight, wallTop, wallThickness, gameHeight - wallTop);
   graphics.fillRectShape(rect);
 }
+
+function addMultiplier() {
+  if (multiplier < 5) {
+    multiplier += 1;
+  }
+};
+
+function resetMultiplier() {
+  multiplier = 1;
+};
 
 function restartGame() {
   game.state.start(game.state.current);

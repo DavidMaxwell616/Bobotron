@@ -1,0 +1,143 @@
+<html>
+
+<head>
+  <script src="js/phaser.min.js"></script>
+  </script>
+</head>
+
+<body>
+  <div id="game"></div>
+</body>
+<script>
+  var config = {
+    type: Phaser.AUTO,
+    width: 640,
+    height: 480,
+    parent: 'game',
+    scene: {
+      preload: preload,
+      create: create,
+      update: update,
+    },
+  };
+
+  var game = new Phaser.Game(config);
+
+  function preload() {
+
+  }
+
+  function create() {
+    renderLevelChanger();
+  }
+
+  function renderLevelChanger() {
+    var width = 640;
+    var height = 480;
+    var halfWidth = width / 2;
+    var wallThickness = 5,
+      wallTop = 30,
+      wallBottom = height - 5,
+      wallLeft = 5,
+      wallRight = width - 5,
+      colors = [];
+
+    for (var i = 0; i < 32; ++i) {
+      var r = Math.sin(0.2 * i + 0) * 127 + 128;
+      var g = Math.sin(0.2 * i + 2) * 127 + 128;
+      var b = Math.sin(0.2 * i + 4) * 127 + 128;
+      colors.push(RGB2Color(r, g, b));
+    }
+
+    var halfHeight = (height - wallTop) / 2;
+    var yMiddle = wallTop + halfHeight;
+    var layerOffsetX = 5;
+    var layerOffsetY = halfHeight / (halfWidth / layerOffsetX);
+    var layers = halfWidth / layerOffsetX;
+
+
+    if (_isRefreshingLevel) {
+
+      var alpha;
+      if (_changingTimer > SECS_TO_NOMINALS) {
+        alpha = (2 * SECS_TO_NOMINALS - _changingTimer) / SECS_TO_NOMINALS;
+      } else {
+        alpha = _changingTimer / SECS_TO_NOMINALS;
+        if (alpha < 0) alpha = 0;
+        entityManager.clearPartial();
+        entityManager.resetPos();
+      }
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = "red";
+      ctx.fillRect(
+        wallLeft,
+        wallTop + wallThickness,
+        wallRight - wallThickness,
+        wallBottom - wallThickness
+      );
+
+    } else {
+
+      if (_changingTimer > SECS_TO_NOMINALS) {
+
+        var range = (2 * SECS_TO_NOMINALS - _changingTimer) /
+          SECS_TO_NOMINALS;
+        var currentLayer = Math.floor(range * layers);
+
+        for (var i = 1; i < currentLayer; i++) {
+          if (i % colors.length < i * colors.length) {
+            ctx.fillStyle = colors[i % colors.length];
+          }
+          ctx.fillRect(
+            halfWidth - i * layerOffsetX,
+            yMiddle - i * layerOffsetY,
+            i * layerOffsetX * 2,
+            i * layerOffsetY * 2
+          );
+        }
+      } else {
+
+        var range = _changingTimer / SECS_TO_NOMINALS;
+        var currentLayer = Math.ceil(range * layers);
+
+        for (var i = 1; i < currentLayer; i++) {
+          if (i % colors.length < i * colors.length) {
+            ctx.fillStyle = colors[i % colors.length];
+          }
+          ctx.fillRect(
+            i * layerOffsetX,
+            wallTop + i * layerOffsetY,
+            width - i * layerOffsetX * 2,
+            height - wallTop - i * layerOffsetY * 2
+          );
+        }
+
+        range = (SECS_TO_NOMINALS - _changingTimer) / SECS_TO_NOMINALS;
+        currentLayer = Math.ceil(range * layers);
+
+        ctx.fillStyle = "black";
+        ctx.fillRect(
+          halfWidth - currentLayer * layerOffsetX,
+          yMiddle - currentLayer * layerOffsetY,
+          currentLayer * layerOffsetX * 2,
+          currentLayer * layerOffsetY * 2
+        );
+      }
+    }
+
+
+    // Reset changing timer when level changing is complete
+    if (_changingTimer < 0) {
+      _isChangingLevel = false;
+      _isRefreshingLevel = false;
+      _changingTimer = 2 * SECS_TO_NOMINALS;
+    }
+  };
+
+
+  function update() {
+
+  }
+</script>
+
+</html>
