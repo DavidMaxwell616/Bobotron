@@ -154,15 +154,15 @@
 
   function renderMenu() {
     var splash = _scene.add.image(width / 2, height / 2, 'splash');
-    for (let index = 0; index < 20; index++) {
+    for (let index = 0; index < 10; index++) {
       var frame = index % 8;
       addLogo(index * 32 + 16, 16, 1, 0, frame);
       addLogo(index * 32 + 16, height - 16, -1, 0, frame);
     }
-    for (let index = 0; index < 20; index++) {
+    for (let index = 0; index < 5; index++) {
       var frame = index % 8;
-      addLogo(16, index * 32 + 16, -1, 0, frame);
-      addLogo(width - 16, index * 32 + 16, 1, 0, frame);
+      addLogo(16, index * 32 + 16, 0, -1, frame);
+      addLogo(width - 16, index * 32 + 16, 0, 1, frame);
     }
     _scene.input.keyboard.on('keydown_R', function (event) {
       splash.destroy();
@@ -177,12 +177,23 @@
     members.forEach(element => {
       element.x += element.xv;
       element.y += element.yv;
-      if (element.x > width - 16 || element.x < 16) {
+      if (element.x > width - 16 && element.xv == 1) {
+        element.x = width - 16;
         element.xv = 0;
-        element.y < 17 ? element.yv = 1 : element.yv = -1;
-      } else if (element.y > height - 16 || element.y < 16) {
+        element.yv = -1;
+      } else if (element.x < 16 && element.xv == -1) {
+        element.x = 16;
+        element.xv = 0;
+        element.yv = 1;
+
+      } else if (element.y > height - 16 && element.yv == 1) {
+        element.y = height - 16;
         element.yv = 0;
-        element.x < 17 ? element.xv = 1 : element.xv = -1;
+        element.xv = -1;
+      } else if (element.y < 16 || element.yv == -1) {
+        element.y = 16;
+        element.yv = 0;
+        element.xv = 1;
       }
     });
   }
