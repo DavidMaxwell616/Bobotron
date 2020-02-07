@@ -46,7 +46,7 @@ function fillBox(ctx, x, y, w, h, style) {
 };
 
 function RGB2Color(r, g, b) {
-  return '#' + this.byte2Hex(r) + this.byte2Hex(g) + this.byte2Hex(b);
+  return '0x' + this.byte2Hex(r) + this.byte2Hex(g) + this.byte2Hex(b);
 };
 
 function byte2Hex(n) {
