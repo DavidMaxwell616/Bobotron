@@ -64,9 +64,6 @@ var NOMINAL_UPDATE_INTERVAL = 16.666;
 // Multiply by this to convert seconds into "nominals"
 var SECS_TO_NOMINALS = 1000 / NOMINAL_UPDATE_INTERVAL;
 
-// A flag which determines wether the score is eligible
-// to be added to the high score list.
-var g_hasCheated = false;
 var colorCounter = 0;
 
 var Brain;
@@ -99,8 +96,5 @@ var Enemies;
 var Bullets;
 var Particles;
 var isMoving = false;
-var isChangingLevel = false;
-var isRefreshingLevel = false;
-var changingTimer = 0;
-var isInMenu = true;
 var isGameOver = false;
+var Logos;

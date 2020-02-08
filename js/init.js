@@ -267,7 +267,9 @@ function initHulks(number) {
     hulk.bootTime = 2 * SECS_TO_NOMINALS;
     hulk.brainpower = 0.05;
     hulk.facing = 0;
-    Enemies.add(hulk);
+    hulk.name = 'Hulk';
+    setupAnimation(hulk, 1, 3, 'Walk');
+   Enemies.add(hulk);
   }
 };
 
@@ -276,6 +278,16 @@ function initBrains(number) {
     var playerSafeDist = 120;
     var descr = findSpawn(playerSafeDist);
     var brain = _scene.add.sprite(descr.cx, descr.cy, 'spriteMap', 'Brain_01.png');
+    brain.killFamily = true;
+    brain.stepsize = 3;
+    brain.makesProgs = true;
+    brain.missileFireChance = 0.005; // 0.5% chance of firing a CM per update
+    // TODO: Find a good firing interval for the missiles.
+    brain.dropChance = 0.9; // 90% chance of a random drop
+    brain.bootTime = SECS_TO_NOMINALS;
+    brain.facing = 0;
+    brain.name = 'Brain';
+    setupAnimation(brain, 1, 3, 'Walk');
     Enemies.add(brain);
   }
 };
@@ -293,6 +305,10 @@ function initElectrodes(number) {
 
 function initProg(cx, cy) {
   var prog = _scene.add.sprite(cx, cy, 'spriteMap', 'Prog_01.png');
+  prog.speed = 1.5;
+  prog.renderPos = {cx: 0, cy: 0};
+  prog.stepsize = 15;
+  prog.facing = 0;
   Enemies.add(prog);
 };
 
@@ -301,26 +317,56 @@ function initQuarks(scene, number) {
     var playerSafeDist = 120;
     var descr = findSpawn(playerSafeDist);
     var quark = _scene.add.sprite(descr.cx, descr.cy, 'spriteMap', 'Quark_01.png');
-    Enemies.add(quark);
+    quark.baseSpeed = 1;
+    quark.velX = quark.baseSpeed * randTrinary();
+    quark.velY = quark.baseSpeed * randTrinary();
+    quark.tanksSpawned = 0;
+    // TODO play spawning sound?
+    quark.makeWarpParticles();
+    quark.tankSpawnChance = 0.005; //0,5% chance of spawning a tank/update
+    // TODO: Find a good spawn interval.
+    quark.maxTanks = 6;
+    quark.constructionTime = SECS_TO_NOMINALS;
+    quark.name = 'Quark';
+    setupAnimation(quark, 1, 3, 'Walk');
+   Enemies.add(quark);
   }
 };
 
 function initTank(cx, cy) {
   var tank = _scene.add.sprite(cx, cy, 'spriteMap', 'Tank_01.png');
-  Enemies.add(tank);
+  tank.shellFireChance = 0.01; //1% chance of firing a shell/update
+  tank.ammo = 20;
+  tank.dropChance = 1; // 100% chance of a random drop
+  tank.stepsize = 3;
+ Enemies.add(tank);
 };
 
 function initSpheroids(number) {
   for (let index = 0; index < number; index++) {
     var playerSafeDist = 120;
-    var descr = this.findSpawn(playerSafeDist);
+    var descr = findSpawn(playerSafeDist);
     var spheroid = _scene.add.sprite(descr.cx, descr.cy, 'spriteMap', 'Spheroid_01.png');
+    spheroid.baseSpeed = 3;
+    spheroid.velX = spheroid.baseSpeed * randTrinary();
+    spheroid.velY = spheroid.baseSpeed * randTrinary();
+    spheroid.tanksSpawned = 0;
+    spheroid.makeWarpParticles();
+    // TODO play spawning sound?
+    spheroid.tankSpawnChance = 0.005; //0,5% chance of spawning a tank/update
+    // TODO: Find a good spawn interval.
+    spheroid.maxTanks = 6;
+    spheroid.constructionTime = SECS_TO_NOMINALS;
+
     Enemies.add(spheroid);
   }
 };
 
 function initEnforcer(cx, cy) {
   var enforcer = _scene.add.sprite(cx, cy, 'spriteMap', 'Enforcer_01.png');
+  enforcer.ammo = 20;
+  enforcer.sparkFireChance = 0.01; //1% chance of firing a spark/update
+  enforcer.spawnTime = SECS_TO_NOMINALS;
   Enemies.add(enforcer);
 };
 
@@ -500,8 +546,7 @@ function Particle(descr) {
     descr.radius = descr.radius * Particle.lifeSpan / fadeThresh;
   }
   var circle = new Phaser.Geom.Circle(0, 0, descr.radius);
-  var color = descr.color.replace("#", "0x");
-  graphics.fillStyle(color, alpha);
+  graphics.fillStyle(descr.color, alpha);
   graphics.fillCircleShape(circle);
   var texture = graphics.generateTexture('particle', descr.radius * 2, descr.radius * 2);
   newSprite = _scene.add.sprite(descr.cx, descr.cy, 'particle');

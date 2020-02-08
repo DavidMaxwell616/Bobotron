@@ -56,6 +56,20 @@ function moveGrunt(grunt, du) {
   grunt.y += velY * du;
 }
 
+function moveBrain(brain,du0){
+  seekTarget(brain);
+
+      if (Math.random() < brain.missileFireChance) {
+          fireCruiseMissile(brain.x, brain.y);
+      }
+      if (!brain.anims.isPlaying) {
+        brain.anims.play('BrainWalk');
+      }
+    
+      brain.x += brain.velX * du;
+      brain.y += brain.velY * du;
+}
+
 function rage(enemy, du) {
   var timeFraction = du / enemy.maxRageReachedTime;
   enemy.speed += (enemy.maxSpeed - enemy.baseSpeed) * timeFraction;
