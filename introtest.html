@@ -35,6 +35,12 @@
   var _menuRendered = false;
   // Multiply by this to convert seconds into "nominals"
   var SECS_TO_NOMINALS = 1000 / NOMINAL_UPDATE_INTERVAL;
+  var wallThickness = 5,
+    wallTop = 30,
+    wallBottom = height - 5,
+    wallLeft = 5,
+    wallRight = width - 5,
+    colors = [];
 
   function preload() {
     this.load.path = '../assets/images/';
@@ -49,6 +55,14 @@
     _scene = this;
     graphics = this.add.graphics();
     logos = this.add.group();
+
+    for (var i = 0; i < 32; ++i) {
+      var r = Math.sin(0.2 * i + 0) * 127 + 128;
+      var g = Math.sin(0.2 * i + 2) * 127 + 128;
+      var b = Math.sin(0.2 * i + 4) * 127 + 128;
+      colors.push(RGB2Color(r, g, b));
+    }
+    console.log(colors);
   }
 
   function RGB2Color(r, g, b) {
@@ -62,19 +76,6 @@
 
   function renderLevelChanger() {
     var halfWidth = width / 2;
-    var wallThickness = 5,
-      wallTop = 30,
-      wallBottom = height - 5,
-      wallLeft = 5,
-      wallRight = width - 5,
-      colors = [];
-
-    for (var i = 0; i < 32; ++i) {
-      var r = Math.sin(0.2 * i + 0) * 127 + 128;
-      var g = Math.sin(0.2 * i + 2) * 127 + 128;
-      var b = Math.sin(0.2 * i + 4) * 127 + 128;
-      colors.push(RGB2Color(r, g, b));
-    }
 
     var halfHeight = (height - wallTop) / 2;
     var yMiddle = wallTop + halfHeight;
@@ -91,8 +92,6 @@
       } else {
         alpha = _changingTimer / SECS_TO_NOMINALS;
         if (alpha < 0) alpha = 0;
-        entityManager.clearPartial();
-        entityManager.resetPos();
       }
       var rect = new Phaser.Geom.Rectangle(wallLeft,
         wallTop + wallThickness,

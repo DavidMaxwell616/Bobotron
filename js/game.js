@@ -1,7 +1,7 @@
 var config = {
   type: Phaser.AUTO,
-  width: 900,
-  height: 500,
+  width: 800,
+  height: 480,
   parent: 'game',
   scene: {
     preload: preload,
@@ -17,9 +17,12 @@ var config = {
 };
 
 var game = new Phaser.Game(config);
-
+gameWidth = config.width;
+gameHeight = config.height;
+wallBottom = gameHeight - 5;
+wallRight = gameWidth - 5;
 var _scene;
-var _isChangingLevel = false;
+var _isChangingLevel = true;
 var _isRefreshingLevel = false;
 var _changingTimer = 0;
 var _isInMenu = true;
@@ -29,7 +32,7 @@ function create() {
   score = 0;
   _scene = this;
   graphics = this.add.graphics();
-  _isRefreshingLevel = true;
+  _isRefreshingLevel = false;
   _changingTimer = 2 * SECS_TO_NOMINALS;
   makeColorArray();
 
@@ -163,12 +166,11 @@ function animateMenu() {
       element.x = 16;
       element.xv = 0;
       element.yv = -1;
-
     } else if (element.y > gameHeight - 16 && element.yv == 1) {
       element.y = gameHeight - 16;
       element.yv = 0;
       element.xv = -1;
-    } else if (element.y < 16 || element.yv == -1) {
+    } else if (element.y < 16 && element.yv == -1) {
       element.y = 16;
       element.yv = 0;
       element.xv = 1;
@@ -178,14 +180,14 @@ function animateMenu() {
 
 function renderMenu() {
   var splash = _scene.add.image(gameWidth / 2, gameHeight / 2, 'splash');
-  for (let index = 0; index < 2; index++) {
+  for (let index = 0; index < 25; index++) {
     var frame = index % 8;
     addLogo(index * 32 + 16, 16, 1, 0, frame);
     addLogo(gameWidth - (index * 32 + 16), gameHeight - 16, -1, 0, frame);
   }
-  for (let index = 0; index < 2; index++) {
+  for (let index = 0; index < 15; index++) {
     var frame = index % 8;
-    addLogo(16, gameHeight - (index * 32 + 16, 0, -1, frame));
+    addLogo(16, index * 32 + 16, 0, -1, frame);
     addLogo(gameWidth - 16, index * 32 + 16, 0, 1, frame);
   }
   _scene.input.keyboard.on('keydown_R', function (event) {
@@ -194,29 +196,16 @@ function renderMenu() {
     splash.destroy();
     _isInMenu = false;
     _isChangingLevel = true;
-    var members = Logos.getChildren();
-    members.forEach(element => {
-      element.destroy();
-    });
+    //  var members = Logos.getChildren();
+    // members.forEach(element => {
+    Logos.clear(true);
+    //  });
   });
   _menuRendered = true;
 }
 
 function renderLevelChanger() {
   var halfWidth = gameWidth / 2;
-  var wallThickness = 5,
-    wallTop = 30,
-    wallBottom = gameHeight - 5,
-    wallLeft = 5,
-    wallRight = gameWidth - 5,
-    colors = [];
-
-  for (var i = 0; i < 32; ++i) {
-    var r = Math.sin(0.2 * i + 0) * 127 + 128;
-    var g = Math.sin(0.2 * i + 2) * 127 + 128;
-    var b = Math.sin(0.2 * i + 4) * 127 + 128;
-    colors.push(RGB2Color(r, g, b));
-  }
 
   var halfHeight = (gameHeight - wallTop) / 2;
   var yMiddle = wallTop + halfHeight;
@@ -282,6 +271,7 @@ function renderLevelChanger() {
     _isRefreshingLevel = false;
     _changingTimer = 2 * SECS_TO_NOMINALS;
   }
+
 };
 
 function addLogo(x, y, xv, yv, f) {
@@ -307,16 +297,19 @@ function update() {
       animateMenu();
   } else {
     if (_isChangingLevel || _isRefreshingLevel) {
-      //renderLevel();
       renderLevelChanger();
       reduceTimer(1);
-
     } else if (!levelRendered) {
       renderLevel();
       startLevel(this);
       levelRendered = true;
     } else if (levelRendered) {
-      moveEntities();
+      moveEntities(this);
+      if (Enemies.getLength() == 0) {
+        clearLevel();
+        level++;
+        _isChangingLevel = true;
+      }
       updateStats();
       reduceTimer(1);
     } else if (isGameOver) {
@@ -340,7 +333,9 @@ function update() {
 
 }
 
-function clearLevel() {}
+function clearLevel() {
+  Family.clear(true);
+}
 
 function restart() {
   lives--;

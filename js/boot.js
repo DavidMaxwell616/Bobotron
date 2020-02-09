@@ -1,6 +1,5 @@
-const gameWidth = 900;
-const gameHeight = 500;
-
+var gameWidth;
+var gameHeight;
 let shieldTime = 20;
 let skull;
 let multiplier = 1;
@@ -48,10 +47,9 @@ const FULL_CIRCLE = Math.PI * 2,
 
   wallThickness = 5,
   wallTop = 30,
-  wallBottom = gameHeight - 5,
   wallLeft = 5,
-  wallRight = gameWidth - 5,
   colors = [];
+var wallBottom, wallRight;
 
 //   var g_canvas = document.getElementById("myCanvas");
 // var g_ctx = g_canvas.getContext("2d");

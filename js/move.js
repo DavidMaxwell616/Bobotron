@@ -138,7 +138,7 @@ function findClosestFamilyMember(posX, posY) {
   var minDistSq = Infinity;
   for (var i = 0; i < this._family.length; i++) {
     var member = this._family[i];
-    var distSq = util.distSq(posX, posY, member.cx, member.cy);
+    var distSq = util.distSq(posX, posY, member.x, member.y);
     if (distSq < minDistSq) {
       closest = member;
       minDistSq = distSq;
@@ -165,7 +165,7 @@ function moveBullets() {
     bullet.lifeSpan -= 1;
     if (bullet.lifeSpan < 0) bullet.destroy();
     if (edgeBounce(bullet)) {
-      //  if (Protagonist.hasMachineGun) spawnFragment(5, "cyan");
+      //  if (Protagonist.hasMachineGun) spawnFragment(5, "yan");
       //  if (Protagonist.hasShotgun) spawnFragment(5, "orange");
       //if (!Protagonist.hasMachineGun && !Protagonist.hasShotgun) spawnFragment(5, "lime");
       bullet.destroy();
@@ -210,7 +210,7 @@ function moveBullets() {
     //       canFriendlyHit.call(hitEntity);
     //       spatialManager.unregister(hitEntity);
     //     }
-    //     if (Player.hasMachineGun) this.spawnFragment(5, "cyan");
+    //     if (Player.hasMachineGun) this.spawnFragment(5, "yan");
     //     if (Player.hasShotgun) this.spawnFragment(5, "orange");
     //     if (!Player.hasMachineGun && !Player.hasShotgun) this.spawnFragment(5, "lime");
     //     return entityManager.KILL_ME_NOW;
@@ -246,8 +246,8 @@ function makeExplosion(enemy) {
       var particle = {
         dirn: Math.random() * 2 * Math.PI,
         speed: Math.random() * 4,
-        cx: enemy.x,
-        cy: enemy.y,
+        x: enemy.x,
+        y: enemy.y,
         color: colorDefinition,
         radius: 5
       };
@@ -273,14 +273,14 @@ function edgeBounce(entity) {
   var bounceHappened = false;
   var velX = entity.velX;
   var velY = entity.velY;
-  var cx = entity.x;
-  var cy = entity.y;
+  var x = entity.x;
+  var y = entity.y;
   var r = entity.width / 2;
-  if (cx + velX > wallRight - r || cx + velX < wallLeft + r) {
+  if (x + velX > wallRight - r || x + velX < wallLeft + r) {
     bounceHappened = true;
     entity.velX = -entity.velX;
   }
-  if (cy + velY > wallBottom - r || cy + velY < wallTop + wallThickness + r) {
+  if (y + velY > wallBottom - r || y + velY < wallTop + wallThickness + r) {
     bounceHappened = true;
     entity.velY = -entity.velY;
   }
