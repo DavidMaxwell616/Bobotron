@@ -51,6 +51,12 @@ const FULL_CIRCLE = Math.PI * 2,
   colors = [];
 var wallBottom, wallRight;
 
+var gameState = {
+  Menu: 0,
+  Transition: 1,
+  Playing: 2,
+  GameOver: 3
+}
 //   var g_canvas = document.getElementById("myCanvas");
 // var g_ctx = g_canvas.getContext("2d");
 
@@ -96,3 +102,4 @@ var Particles;
 var isMoving = false;
 var isGameOver = false;
 var Logos;
+var Rewards;

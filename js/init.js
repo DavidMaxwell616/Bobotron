@@ -5,12 +5,12 @@ function initEntities(levelData) {
   // Family, Electrodes, Grunts, Hulks, Spheroids, Brains, Quarks (not the Star Trek DS9 version)
   initProtagonist();
   initFamily(levelData[0]);
-  //initElectrodes(levelData[1]);
+  initElectrodes(levelData[1]);
   initGrunts(levelData[2]);
-  // initHulks(levelData[3]);
-  // initSpheroids(levelData[4]);
-  // initBrains(levelData[5]);
-  // initQuarks(levelData[6]);
+  initHulks(levelData[3]);
+  //initSpheroids(levelData[4]);
+  //initBrains(levelData[5]);
+  //initQuarks(levelData[6]);
 }
 //LEVEL STUFF
 
@@ -20,6 +20,7 @@ var _levelSpecs = [
   // so we skip him in the level description
 
   [], // level "0", skipped automatically
+  [2, 1, 0, 1],
   [2, 0, 6],
   [3, 4, 8, 2],
   [5, 6, 10, 4]
@@ -295,10 +296,23 @@ function initElectrodes(number) {
     var playerSafeDist = 120;
     var descr = findSpawn(playerSafeDist);
     descr.shapes = Math.floor(Math.random() * 7);
-    var electrode = _scene.add.sprite(descr.x, descr.y, 'spriteMap', 'Electrode_01.png');
-    electrode.setFrame(descr.shapes);
-    Enemies.add(electrode);
+    var elec = electrodes[descr.shapes];
+    var electrode = _scene.add.sprite(descr.x, descr.y, 'spriteMap', elec + '_01.png');
+    electrode.name = elec;
+    setupAnimation(electrode, 1, 3, 'Blink');
+    electrode.anims.play(elec + 'Blink');
+    Rewards.add(electrode);
   }
+};
+
+var electrodes = {
+  0: 'Triangle',
+  1: 'Square',
+  2: 'Rectangle',
+  3: 'Dizzy',
+  4: 'Diamond',
+  5: 'Checkers',
+  6: 'BlackDiamond'
 };
 
 function initProg(x, y) {
@@ -538,23 +552,17 @@ function createParticle(descr) {
 
 function Particle(descr) {
   var newSprite;
-  Particle.lifeSpan = SECS_TO_NOMINALS / 2;
-  var alpha = 1;
-  var fadeThresh = 3 * Particle.lifeSpan / 4;
-  var graphics = _scene.add.graphics();
-  if (Particle.lifeSpan < fadeThresh) {
-    alpha = Particle.lifeSpan / fadeThresh;
-    descr.radius = descr.radius * Particle.lifeSpan / fadeThresh;
-  }
+  var _graphics = _scene.add.graphics();
   var circle = new Phaser.Geom.Circle(0, 0, descr.radius);
-  graphics.fillStyle(descr.color, alpha);
-  graphics.fillCircleShape(circle);
-  var texture = graphics.generateTexture('particle', descr.radius * 2, descr.radius * 2);
+  _graphics.fillStyle(descr.color, 1);
+  _graphics.fillCircleShape(circle);
+  var texture = _graphics.generateTexture('particle', descr.radius * 2, descr.radius * 2);
   newSprite = _scene.add.sprite(descr.x, descr.y, 'particle');
   newSprite.velX = 1;
   newSprite.velY = 1;
   newSprite.speed = 10;
+  newSprite.lifeSpan = SECS_TO_NOMINALS / 2;
   newSprite.dirn = descr.dirn;
-  graphics.destroy();
+  _graphics.destroy();
   return newSprite;
 }

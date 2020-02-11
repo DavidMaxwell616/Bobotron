@@ -14,9 +14,11 @@ function moveEnemies() {
   members.forEach(element => {
     switch (element.name) {
       case "Grunt":
-        moveGrunt(element, 1);
+        moveGrunt(element);
         break;
-
+      case "Hulk":
+        moveHulk(element);
+        break;
       default:
         break;
     }
@@ -24,7 +26,7 @@ function moveEnemies() {
 
 }
 
-function moveGrunt(grunt, du) {
+function moveGrunt(grunt) {
   var du = 1;
   //rage(grunt, du);
   var xOffset = Protagonist.x - grunt.x;
@@ -56,18 +58,18 @@ function moveGrunt(grunt, du) {
   grunt.y += velY * du;
 }
 
-function moveBrain(brain,du0){
+function moveBrain(brain, du0) {
   seekTarget(brain);
 
-      if (Math.random() < brain.missileFireChance) {
-          fireCruiseMissile(brain.x, brain.y);
-      }
-      if (!brain.anims.isPlaying) {
-        brain.anims.play('BrainWalk');
-      }
-    
-      brain.x += brain.velX * du;
-      brain.y += brain.velY * du;
+  if (Math.random() < brain.missileFireChance) {
+    fireCruiseMissile(brain.x, brain.y);
+  }
+  if (!brain.anims.isPlaying) {
+    brain.anims.play('BrainWalk');
+  }
+
+  brain.x += brain.velX * du;
+  brain.y += brain.velY * du;
 }
 
 function rage(enemy, du) {
@@ -132,18 +134,59 @@ function moveFamily() {
   });
 }
 
+function findTarget(entity) {
+  var target = findClosestFamilyMember(entity.x, entity.y);
+  if (target === null || target === undefined) {
+    target = findProtagonist();
+  }
+  return target;
+};
+
+function moveHulk(hulk) {
+  var du = 1;
+  var target = findTarget(hulk);
+
+  var xOffset = target.x - hulk.x;
+  var yOffset = target.y - hulk.y;
+  var difficulty = Math.random();
+
+  if (
+    (Math.abs(xOffset) < 10 && difficulty < hulk.brainpower) ||
+    (Math.abs(yOffset) < 10 && difficulty < hulk.brainpower)
+  ) {
+    hulk.velX = 0;
+    hulk.velY = 0;
+    if (Math.abs(xOffset) > Math.abs(yOffset)) {
+      if (xOffset > 0) {
+        hulk.velX = 1;
+      } else {
+        hulk.velX = -1;
+      }
+    } else {
+      if (yOffset > 0) {
+        hulk.velY = 1;
+      } else {
+        hulk.velY = -1;
+      }
+    }
+    hulk.bootTime = 2 * SECS_TO_NOMINALS;
+    hulk.x += hulk.velX * du;
+    hulk.y += hulk.velY * du;
+  }
+}
 
 function findClosestFamilyMember(posX, posY) {
   var closest = null;
   var minDistSq = Infinity;
-  for (var i = 0; i < this._family.length; i++) {
-    var member = this._family[i];
-    var distSq = util.distSq(posX, posY, member.x, member.y);
+  var members = Family.getChildren();
+
+  members.forEach(member => {
+    var distSq = this.distSq(posX, posY, member.x, member.y);
     if (distSq < minDistSq) {
       closest = member;
       minDistSq = distSq;
     }
-  }
+  });
   return closest;
 };
 
@@ -155,7 +198,7 @@ function moveProtagonist() {
     Protagonist.x += Protagonist.velX;
     Protagonist.y += Protagonist.velY;
   }
-
+  edgeBounce(Protagonist);
 }
 
 function moveBullets() {
@@ -228,6 +271,19 @@ function enemyHitFamily(enemy, member) {
   }, [], _scene);
 }
 
+function enemyHitProtagonist(enemy, player) {
+  var skull = _scene.add.sprite(player.x, player.y, 'spriteMap', 'Skull.png');
+  player.destroy();
+  var timedEvent = _scene.time.delayedCall(3000, function () {
+    skull.destroy();
+    lives--;
+    if (lives == 0)
+      _gameState = gameState.GameOver;
+    else
+      _gameState = gameState.Transition;
+  }, [], _scene);
+}
+
 function bulletHitEnemy(bullet, enemy) {
   var canTakeHit = enemy.takeBulletHit;
   if (canTakeHit) {
@@ -291,8 +347,17 @@ function moveParticles() {
   var du = 1;
   var particles = Particles.getChildren();
   particles.forEach(particle => {
-    //    particle.lifeSpan -= du;
-    //    if (particle.lifeSpan < 0) particle.destroy;
+    particle.lifeSpan -= 1;
+    var alpha = 1;
+    var fadeThresh = 3 * particle.lifeSpan / 4;
+    if (particle.lifeSpan < fadeThresh) {
+      alpha = particle.lifeSpan / fadeThresh;
+      particle.width = particle.width * particle.lifeSpan / fadeThresh;
+      particle.height = particle.height * particle.lifeSpan / fadeThresh;
+    }
+
+    //  console.log(particle.lifeSpan);
+    if (particle.lifeSpan < 0) particle.destroy();
     //console.log(particle.dirn);
     if (particle.dirn) {
       particle.velX = Math.cos(particle.dirn) * particle.speed;
