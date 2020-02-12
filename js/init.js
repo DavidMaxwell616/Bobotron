@@ -8,9 +8,9 @@ function initEntities(levelData) {
   initElectrodes(levelData[1]);
   initGrunts(levelData[2]);
   initHulks(levelData[3]);
-  initSpheroids(levelData[4]);
-  initBrains(levelData[5]);
-  initQuarks(levelData[6]);
+  //  initSpheroids(levelData[4]);
+  //  initBrains(levelData[5]);
+  //  initQuarks(levelData[6]);
   //drawSprite();
 }
 //LEVEL STUFF
@@ -261,6 +261,7 @@ function initHulks(number) {
   for (let index = 0; index < number; index++) {
     var playerSafeDist = 120;
     var descr = findSpawn(playerSafeDist);
+    console.log(descr.x, descr.y);
     var hulk = _scene.add.sprite(descr.x, descr.y, 'spriteMap', 'Hulk_01.png');
     hulk.killFamily = true;
     hulk.stepsize = 12;
@@ -269,6 +270,8 @@ function initHulks(number) {
     hulk.facing = 0;
     hulk.takeBulletHit = true;
     hulk.name = 'Hulk';
+    hulk.velX = 0;
+    hulk.velY = 0;
     setupAnimation(hulk, 1, 3, 'WalkLeft');
     setupAnimation(hulk, 4, 6, 'WalkUpDown');
     setupAnimation(hulk, 7, 9, 'WalkRight');
@@ -286,6 +289,7 @@ function initQuarks(number) {
     quark.velY = quark.baseSpeed * randTrinary();
     quark.tanksSpawned = 0;
     quark.maxTanks = 6;
+    quark.takeBulletHit = false;
     quark.bootTime = 2 * SECS_TO_NOMINALS;
     quark.name = 'Quark';
     setupAnimation(quark, 1, 3, 'WalkLeft');
@@ -303,6 +307,7 @@ function initBrains(number) {
     brain.killFamily = true;
     brain.stepsize = 3;
     brain.makesProgs = true;
+    brain.takeBulletHit = false;
     brain.missileFireChance = 0.005; // 0.5% chance of firing a CM per update
     // TODO: Find a good firing interval for the missiles.
     brain.dropChance = 0.9; // 90% chance of a random drop
@@ -352,26 +357,6 @@ function initProg(x, y) {
   Enemies.add(prog);
 };
 
-function initQuarks(scene, number) {
-  for (let index = 0; index < number; index++) {
-    var playerSafeDist = 120;
-    var descr = findSpawn(playerSafeDist);
-    var quark = _scene.add.sprite(descr.x, descr.y, 'spriteMap', 'Quark_01.png');
-    quark.baseSpeed = 1;
-    quark.velX = quark.baseSpeed * randTrinary();
-    quark.velY = quark.baseSpeed * randTrinary();
-    quark.tanksSpawned = 0;
-    // TODO play spawning sound?
-    quark.makeWarpParticles();
-    quark.tankSpawnChance = 0.005; //0,5% chance of spawning a tank/update
-    // TODO: Find a good spawn interval.
-    quark.maxTanks = 6;
-    quark.constructionTime = SECS_TO_NOMINALS;
-    quark.name = 'Quark';
-    setupAnimation(quark, 1, 3, 'Walk');
-    Enemies.add(quark);
-  }
-};
 
 function initTank(x, y) {
   var tank = _scene.add.sprite(x, y, 'spriteMap', 'Tank_01.png');
@@ -426,7 +411,7 @@ function fireCruiseMissile(x, y) {
   newSprite.setOrigin(.5);
   newSprite.name = 'missile';
   graphics.destroy();
-  Bullets.add(newSprite);
+  Enemies.add(newSprite);
 };
 
 function fireShell(x, y, angle) {

@@ -47,17 +47,16 @@ function create() {
     .setOrigin(0);
 
   this.physics.add.collider(Bullets, Enemies, function (bullet, enemy) {
-    console.log('bullet hit enemy!');
     bulletHitEnemy(bullet, enemy);
   });
 
-  this.physics.add.collider(Enemies, Family, function (enemy, member) {
-    enemyHitFamily(enemy, member);
-  });
+  // this.physics.add.collider(Enemies, Family, function (enemy, member) {
+  //   enemyHitFamily(enemy, member);
+  // });
 
-  this.physics.add.collider(Enemies, Protagonist, function (enemy, player) {
-    enemyHitProtagonist(enemy, player);
-  });
+  // this.physics.add.collider(Enemies, Protagonist, function (enemy, player) {
+  //   enemyHitProtagonist(enemy, player);
+  // });
 
   this.physics.add.collider(Rewards, Protagonist, function (reward, player) {
     protagonistHitReward(reward, player);

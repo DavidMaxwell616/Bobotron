@@ -20,17 +20,17 @@ function moveEnemies() {
         moveHulk(element);
         break;
       case "Spheroid":
-          moveSpheroids(element);
-          break;
+        moveSpheroids(element);
+        break;
       case "Brain":
         moveBrains(element);
         break;
-        case "Quark":
-          moveQuarks(element);
-          break;
-          case "Enforcer":
-            moveEnforcers(element);
-            break;
+      case "Quark":
+        moveQuarks(element);
+        break;
+      case "Enforcer":
+        moveEnforcers(element);
+        break;
       default:
         break;
     }
@@ -97,9 +97,9 @@ function moveBrains(brain) {
       brain.velY = -1;
     }
 
-  brain.x += brain.velX * du;
-  brain.y += brain.velY * du;
-}
+    brain.x += brain.velX * du;
+    brain.y += brain.velY * du;
+  }
 }
 
 function rage(enemy, du) {
@@ -183,8 +183,6 @@ function moveHulk(hulk) {
     (Math.abs(xOffset) < 10 && difficulty < hulk.brainpower) ||
     (Math.abs(yOffset) < 10 && difficulty < hulk.brainpower)
   ) {
-    hulk.velX = 0;
-    hulk.velY = 0;
     if (Math.abs(xOffset) > Math.abs(yOffset)) {
       if (xOffset > 0) {
         hulk.anims.play(hulk.name + 'WalkRight');
@@ -202,7 +200,6 @@ function moveHulk(hulk) {
         hulk.velY = -1;
       }
     }
- 
     hulk.x += hulk.velX * du;
     hulk.y += hulk.velY * du;
   }
@@ -243,13 +240,12 @@ function moveBullets() {
     if (edgeBounce(bullet)) {
       bullet.destroy();
     }
-if(bullet.name=='missile')
-{
-  var xOffset = Protagonist.x - bullet.x;
-  var yOffset = Protagonist.y - bullet.y;
-  bullet.velX+=xOffset/10;
-  bullet.velY+=yOffset/10;
-  }    
+    if (bullet.name == 'missile') {
+      var xOffset = Protagonist.x - bullet.x;
+      var yOffset = Protagonist.y - bullet.y;
+      bullet.velX += xOffset / 10;
+      bullet.velY += yOffset / 10;
+    }
     // Update positions
 
     // bullet.velX = bullet.bulletVel * bullet.dirnX;
@@ -327,10 +323,9 @@ function bulletHitEnemy(bullet, enemy) {
     makeExplosion(enemy);
     enemy.destroy();
     bullet.destroy();
-  }
-  else{
-    enemy.x+=bullet.xVel;
-    enemy.y+=bullet.yVel;
+  } else {
+    enemy.x += bullet.xVel;
+    enemy.y += bullet.yVel;
     bullet.destroy();
   }
 }
@@ -410,97 +405,95 @@ function moveParticles() {
   });
 };
 
-function moveSpheroids(spheroid){
-var du = 1;
+function moveSpheroids(spheroid) {
+  var du = 1;
   if (spheroid.isSpawning) {
-      warpIn(1);
+    warpIn(1);
   } else {
-      // maxTanks is effectively zero-indexed
-      if (Math.random() < spheroid.tankSpawnChance &&
+    // maxTanks is effectively zero-indexed
+    if (Math.random() < spheroid.tankSpawnChance &&
       spheroid.tanksSpawned < spheroid.maxTanks &&
       spheroid.constructionTime < 0) {
-        spheroid.tanksSpawned++;
-          entityManager.createEnforcer(spheroid.x, spheroid.y);
-          spheroid.constructionTime = SECS_TO_NOMINALS;
-      }
+      spheroid.tanksSpawned++;
+      entityManager.createEnforcer(spheroid.x, spheroid.y);
+      spheroid.constructionTime = SECS_TO_NOMINALS;
+    }
 
-  if (Math.random() < 0.02) {
+    if (Math.random() < 0.02) {
       //2% chance to change direction
 
       var n = Math.floor(Math.random() * 4);
       switch (n) {
-          case 0:
-            spheroid.velX = -spheroid.baseSpeed;
-              break;
-          case 1:
-            spheroid.velY = -spheroid.baseSpeed;
-              break;
-          case 2:
-            spheroid.velX = spheroid.baseSpeed;
-              break;
-          case 3:
-            spheroid.velY = spheroid.baseSpeed;
+        case 0:
+          spheroid.velX = -spheroid.baseSpeed;
+          break;
+        case 1:
+          spheroid.velY = -spheroid.baseSpeed;
+          break;
+        case 2:
+          spheroid.velX = spheroid.baseSpeed;
+          break;
+        case 3:
+          spheroid.velY = spheroid.baseSpeed;
       }
       spheroid.x += spheroid.velX * du;
       spheroid.y += spheroid.velY * du;
+    }
   }
-}
 };
 
-function moveEnforcers(enforcer){
- var du =1;
+function moveEnforcers(enforcer) {
+  var du = 1;
   seekTarget();
   enforcer.target = Protagonist;
-   enforcer.x += enforcer.velX * du;
-   enforcer.y += enforcer.velY * du;
+  enforcer.x += enforcer.velX * du;
+  enforcer.y += enforcer.velY * du;
 
-        if (Math.random() < this.sparkFireChance && this.ammo > 0) {
-            var angle = angleTo(
-              enforcer.x,
-              enforcer.y,
-              enforcer.target.cx,
-              enforcer.target.cy
-            );
-            enforcer.ammo--;
-            fireSpark(enforcer.cx, enforcer.cy, angle);
-        }
+  if (Math.random() < this.sparkFireChance && this.ammo > 0) {
+    var angle = angleTo(
+      enforcer.x,
+      enforcer.y,
+      enforcer.target.cx,
+      enforcer.target.cy
+    );
+    enforcer.ammo--;
+    fireSpark(enforcer.cx, enforcer.cy, angle);
+  }
 
 };
 
-function moveQuarks(quark)
-{
+function moveQuarks(quark) {
   var du = 1;
-     // maxTanks is effectively zero-indexed
-     if (Math.random() < quark.tankSpawnChance &&
-     quark.tanksSpawned < quark.maxTanks &&
-     quark.constructionTime < 0) {
-      quark.tanksSpawned++;
-     createTank(quark.x, quark.y);
-     quark.constructionTime = 2 * SECS_TO_NOMINALS;
- }
-if (Math.random() < 0.005) {
- //0.5% chance to change direction
- var n = Math.floor(Math.random() * 4);
- switch (n) {
-     case 0:
-      brain.anims.play(quark.name + 'WalkLeft');
-      quark.velX = -quark.baseSpeed;
-         break;
-     case 1:
-      brain.anims.play(quark.name + 'WalkUpDown');
-      quark.velY = -quark.baseSpeed;
-         break;
-     case 2:
-      brain.anims.play(quark.name + 'WalkRight');
-      quark.velX = quark.baseSpeed;
-         break;
-     case 3:
-      brain.anims.play(quark.name + 'WalkUpDown');
-      quark.velY = quark.baseSpeed;
- }
- quark.x += quark.velX * du;
- quark.y += quark.velY * du;
+  // maxTanks is effectively zero-indexed
+  if (Math.random() < quark.tankSpawnChance &&
+    quark.tanksSpawned < quark.maxTanks &&
+    quark.constructionTime < 0) {
+    quark.tanksSpawned++;
+    createTank(quark.x, quark.y);
+    quark.constructionTime = 2 * SECS_TO_NOMINALS;
+  }
+  if (Math.random() < 0.005) {
+    //0.5% chance to change direction
+    var n = Math.floor(Math.random() * 4);
+    switch (n) {
+      case 0:
+        brain.anims.play(quark.name + 'WalkLeft');
+        quark.velX = -quark.baseSpeed;
+        break;
+      case 1:
+        brain.anims.play(quark.name + 'WalkUpDown');
+        quark.velY = -quark.baseSpeed;
+        break;
+      case 2:
+        brain.anims.play(quark.name + 'WalkRight');
+        quark.velX = quark.baseSpeed;
+        break;
+      case 3:
+        brain.anims.play(quark.name + 'WalkUpDown');
+        quark.velY = quark.baseSpeed;
+    }
+    quark.x += quark.velX * du;
+    quark.y += quark.velY * du;
 
-}
+  }
 };
-
