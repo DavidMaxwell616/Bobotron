@@ -47,6 +47,7 @@ function create() {
     .setOrigin(0);
 
   this.physics.add.collider(Bullets, Enemies, function (bullet, enemy) {
+    console.log('bullet hit enemy!');
     bulletHitEnemy(bullet, enemy);
   });
 
@@ -62,7 +63,7 @@ function create() {
     protagonistHitReward(reward, player);
   });
 
-  _gameState = gameState.Menu;
+  _gameState = gameState.Playing;
 }
 
 function updateStats() {
@@ -256,15 +257,24 @@ function addLogo(x, y, xv, yv, f) {
 }
 
 function renderGameOver() {
-  var gameOverText = _scene.add.text(gameWidth / 2, gameHeight / 2, 'GAME OVER', {
-    fontFamily: 'Arial',
-    fontSize: '60px',
-    fill: 'red',
-  });
-  var timedEvent = _scene.time.delayedCall(3000, function () {
-    gameOverText.destroy();
-    _gameState = gameState.Menu;
-  }, [], _scene);
+  var gameOverText = _scene.add.text(
+    gameWidth / 2,
+    gameHeight / 2,
+    'GAME OVER', {
+      fontFamily: 'Arial',
+      fontSize: '60px',
+      fill: 'red',
+    },
+  );
+  var timedEvent = _scene.time.delayedCall(
+    3000,
+    function () {
+      gameOverText.destroy();
+      _gameState = gameState.Menu;
+    },
+    [],
+    _scene,
+  );
 }
 
 // the game loop. Game logic lives in here.
@@ -312,7 +322,7 @@ function clearLevel() {
   Particles.clear(true);
   Enemies.clear(true);
   Bullets.clear(true);
-  Protagonist.x = _gameWidth / 2;
+  Protagonist.x = gameWidth / 2;
   Protagonist.y = gameHeight / 2;
   Protagonist.velX = 0;
   Protagonist.velY = 0;

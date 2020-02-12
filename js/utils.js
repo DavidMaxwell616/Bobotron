@@ -18,6 +18,10 @@ function clearCanvas(ctx) {
   ctx.restore();*/
 };
 
+function randTrinary() {
+  return Math.floor(Math.random()*3)-1;
+}
+
 function distSq(x1, y1, x2, y2) {
   return square(x2 - x1) + square(y2 - y1);
 };

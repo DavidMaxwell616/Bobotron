@@ -8,9 +8,10 @@ function initEntities(levelData) {
   initElectrodes(levelData[1]);
   initGrunts(levelData[2]);
   initHulks(levelData[3]);
-  //initSpheroids(levelData[4]);
-  //initBrains(levelData[5]);
-  //initQuarks(levelData[6]);
+  initSpheroids(levelData[4]);
+  initBrains(levelData[5]);
+  initQuarks(levelData[6]);
+  //drawSprite();
 }
 //LEVEL STUFF
 
@@ -20,7 +21,7 @@ var _levelSpecs = [
   // so we skip him in the level description
 
   [], // level "0", skipped automatically
-  [2, 1, 0, 1],
+  [2, 1, 1, 1, 1, 1, 1],
   [2, 0, 6],
   [3, 4, 8, 2],
   [5, 6, 10, 4]
@@ -65,8 +66,8 @@ function startLevel(scene) {
 }
 
 function drawSprite() {
-  for (let index = 0; index < 12; index++) {
-    var dad = _scene.add.sprite(index * 20, gameHeight / 2 + 50, 'spriteMap', 'Dad_0' + index + '.png');
+  for (let index = 1; index < 14; index++) {
+    var dad = _scene.add.sprite(index * 20 + 50, gameHeight / 2 + 50, 'spriteMap', 'Quark_0' + index + '.png');
 
   }
 }
@@ -74,8 +75,8 @@ function drawSprite() {
 function findClosestFamilyMember(posX, posY) {
   var closest = null;
   var minDistSq = Infinity;
-  for (var i = 0; i < this._family.length; i++) {
-    var member = this._family[i];
+  for (var i = 0; i < _family.length; i++) {
+    var member = _family[i];
     var distSq = util.distSq(posX, posY, member.x, member.y);
     if (distSq < minDistSq) {
       closest = member;
@@ -250,7 +251,7 @@ function initGrunts(number) {
     grunt.maxRageReachedTime = 40 * SECS_TO_NOMINALS;
     grunt.name = 'Grunt';
     grunt.value = scoreValues.Grunt * multiplier;
-    grunt.takeBulletHit = true;
+    grunt.takeBulletHit = false;
     setupAnimation(grunt, 1, 3, 'Walk');
     Enemies.add(grunt);
   }
@@ -266,9 +267,31 @@ function initHulks(number) {
     hulk.bootTime = 2 * SECS_TO_NOMINALS;
     hulk.brainpower = 0.05;
     hulk.facing = 0;
+    hulk.takeBulletHit = true;
     hulk.name = 'Hulk';
-    setupAnimation(hulk, 1, 3, 'Walk');
+    setupAnimation(hulk, 1, 3, 'WalkLeft');
+    setupAnimation(hulk, 4, 6, 'WalkUpDown');
+    setupAnimation(hulk, 7, 9, 'WalkRight');
     Enemies.add(hulk);
+  }
+};
+
+function initQuarks(number) {
+  for (let index = 0; index < number; index++) {
+    var playerSafeDist = 120;
+    var descr = findSpawn(playerSafeDist);
+    var quark = _scene.add.sprite(descr.x, descr.y, 'spriteMap', 'Quark_01.png');
+    quark.baseSpeed = 1;
+    quark.velX = quark.baseSpeed * randTrinary();
+    quark.velY = quark.baseSpeed * randTrinary();
+    quark.tanksSpawned = 0;
+    quark.maxTanks = 6;
+    quark.bootTime = 2 * SECS_TO_NOMINALS;
+    quark.name = 'Quark';
+    setupAnimation(quark, 1, 3, 'WalkLeft');
+    setupAnimation(quark, 4, 6, 'WalkUpDown');
+    setupAnimation(quark, 7, 9, 'WalkRight');
+    Enemies.add(quark);
   }
 };
 
@@ -286,7 +309,9 @@ function initBrains(number) {
     brain.bootTime = SECS_TO_NOMINALS;
     brain.facing = 0;
     brain.name = 'Brain';
-    setupAnimation(brain, 1, 3, 'Walk');
+    setupAnimation(brain, 1, 3, 'WalkLeft');
+    setupAnimation(brain, 4, 6, 'WalkUpDown');
+    setupAnimation(brain, 7, 9, 'WalkRight');
     Enemies.add(brain);
   }
 };
@@ -366,28 +391,42 @@ function initSpheroids(number) {
     spheroid.velX = spheroid.baseSpeed * randTrinary();
     spheroid.velY = spheroid.baseSpeed * randTrinary();
     spheroid.tanksSpawned = 0;
-    spheroid.makeWarpParticles();
+    makeWarpParticles();
     // TODO play spawning sound?
     spheroid.tankSpawnChance = 0.005; //0,5% chance of spawning a tank/update
     // TODO: Find a good spawn interval.
     spheroid.maxTanks = 6;
     spheroid.constructionTime = SECS_TO_NOMINALS;
-
+    spheroid.name = 'Spheroid';
+    setupAnimation(spheroid, 1, 9, 'Blink');
+    spheroid.anims.play('SpheroidBlink');
     Enemies.add(spheroid);
   }
 };
 
-function initEnforcer(x, y) {
+function createEnforcer(x, y) {
   var enforcer = _scene.add.sprite(x, y, 'spriteMap', 'Enforcer_01.png');
   enforcer.ammo = 20;
   enforcer.sparkFireChance = 0.01; //1% chance of firing a spark/update
   enforcer.spawnTime = SECS_TO_NOMINALS;
+  enforcer.name = 'Enforcer';
+  setupAnimation(enforcer, 1, 3, 'Left');
+  setupAnimation(enforcer, 4, 6, 'Right');
   Enemies.add(enforcer);
 };
 
 function fireCruiseMissile(x, y) {
-  var missile = _scene.add.sprite(x, y, 'spriteMap', 'Cruise_Missile_01.png');
-  Bullets.add(missile);
+  var graphics = _scene.add.graphics();
+  var circle = new Phaser.Geom.Circle(2, 2, 4);
+  graphics.fillStyle("grey", 1);
+  graphics.fillCircleShape(circle);
+  var texture = graphics.generateTexture('missile', 4, 4);
+  newSprite = _scene.add.sprite(x, y, 'bullet');
+  newSprite.lifeSpan = 5 * SECS_TO_NOMINALS;
+  newSprite.setOrigin(.5);
+  newSprite.name = 'missile';
+  graphics.destroy();
+  Bullets.add(newSprite);
 };
 
 function fireShell(x, y, angle) {
@@ -462,30 +501,30 @@ function Projectile(descr) {
       //case Protagonist.hasMachineGun:
       // ctx.strokeStyle = 0x008b8b; //yan
       // ctx.fillStyle = 0x008b8;
-      //var dirn = util.angleTo(this.x, this.y, this.prevX, this.prevY);
-      //var x = this.x + 10 * Math.cos(dirn);
-      //var y = this.y + 10 * Math.sin(dirn);
+      //var dirn = util.angleTo(x, y, prevX, prevY);
+      //var x = x + 10 * Math.cos(dirn);
+      //var y = y + 10 * Math.sin(dirn);
       // ctx.globalAlpha = 0.4;
       // ctx.beginPath();
-      // ctx.moveTo(this.x, this.y);
+      // ctx.moveTo(x, y);
       // ctx.lineTo(x, y);
       // ctx.lineWidth = 8;
       // ctx.stroke();
-      // util.fillCircle(ctx, this.x, this.y, 4);
+      // util.fillCircle(ctx, x, y, 4);
 
       // ctx.globalAlpha = 0.6;
       // ctx.beginPath();
-      // ctx.moveTo(this.x, this.y);
+      // ctx.moveTo(x, y);
       // ctx.lineTo(x, y);
       // ctx.lineWidth = 4;
       // ctx.stroke();
-      // util.fillCircle(ctx, this.x, this.y, 2);
+      // util.fillCircle(ctx, x, y, 2);
 
       // ctx.strokeStyle = "white";
       // ctx.fillStyle = "white";
       // ctx.globalAlpha = 1;
       // ctx.beginPath();
-      // ctx.moveTo(this.x, this.y);
+      // ctx.moveTo(x, y);
       // ctx.lineTo(x, y);
       // ctx.lineWidth = 2;
       // ctx.stroke();
@@ -515,6 +554,35 @@ function Projectile(descr) {
   return newSprite;
 };
 
+function makeWarpParticles() {
+
+  for (var i = 0; i < colors.length; i++) {
+    var colorDefinition = colors[i];
+    var numberOfParticles = colorDefinition.ratio * Particles.getChildren().Length;
+    for (var j = 0; j < numberOfParticles; j++) {
+      var direction = Phaser.Between(0, Math.PI * 2);
+      var speed = Phaser.Between(0, 2);
+      var distance = speed * particle.lifeSpan;
+
+      var particle = {
+        dirn: direction,
+        speed: -speed,
+        x: x + distance * Math.cos(direction),
+        y: y + distance * Math.sin(direction),
+        color: colorDefinition.color,
+        radius: 1
+      };
+      createParticle(particle);
+    }
+  }
+};
+
+function warpIn(du) {
+  spawnTimeElapsed += du;
+  if (spawnTimeElapsed > spawnTime) {
+    isSpawning = false;
+  }
+};
 
 function spawnFragment(num, specificColor) {
 
@@ -523,15 +591,15 @@ function spawnFragment(num, specificColor) {
   for (var i = 0; i < num; i++) {
     var dirn = Math.random() * 2 * Math.PI;
     var color;
-    //if (specificColor === undefined) {
-    var colorId = Math.floor(Math.random() * 5);
-    color = explosionColors[colorId];
-    // } else {
-    //   color = specificColor;
-    // }
+    if (specificColor === undefined) {
+      var colorId = Math.floor(Math.random() * 5);
+      color = explosionColors[colorId];
+    } else {
+      color = specificColor;
+    }
     var descr = {
-      x: this.x,
-      y: this.y,
+      x,
+      y,
       dirn: dirn,
       color: color
     };
