@@ -103,3 +103,4 @@ var isMoving = false;
 var isGameOver = false;
 var Logos;
 var Rewards;
+var ExtraLives;

@@ -28,6 +28,9 @@ function moveEnemies() {
       case "Quark":
         moveQuarks(element);
         break;
+      case "Prog":
+        moveProgs(element);
+        break;
       case "Enforcer":
         moveEnforcers(element);
         break;
@@ -178,7 +181,6 @@ function moveHulk(hulk) {
   var xOffset = target.x - hulk.x;
   var yOffset = target.y - hulk.y;
   var difficulty = Math.random();
-
   if (
     (Math.abs(xOffset) < 10 && difficulty < hulk.brainpower) ||
     (Math.abs(yOffset) < 10 && difficulty < hulk.brainpower)
@@ -200,9 +202,11 @@ function moveHulk(hulk) {
         hulk.velY = -1;
       }
     }
-    hulk.x += hulk.velX * du;
-    hulk.y += hulk.velY * du;
-  }
+  } else
+    hulk.anims.pause();
+
+  hulk.x += hulk.velX * du;
+  hulk.y += hulk.velY * du;
 }
 
 function findClosestFamilyMember(posX, posY) {
@@ -296,19 +300,25 @@ function moveBullets() {
 };
 
 function enemyHitFamily(enemy, member) {
-  var skull = _scene.add.sprite(member.x, member.y, 'spriteMap', 'Skull.png');
-  member.destroy();
-  var timedEvent = _scene.time.delayedCall(3000, function () {
-    skull.destroy();
-  }, [], _scene);
+  if (enemy.makeProgs) {
+    createProg(member.x, member.y);
+    member.destroy();
+  } else {
+    var skull = _scene.add.sprite(member.x, member.y, 'spriteMap', 'Skull.png');
+    member.destroy();
+    var timedEvent = _scene.time.delayedCall(3000, function () {
+      skull.destroy();
+    }, [], _scene);
+  }
 }
 
-function enemyHitProtagonist(enemy, player) {
+function protagonistHitEnemy(player, enemy) {
   var skull = _scene.add.sprite(player.x, player.y, 'spriteMap', 'Skull.png');
   player.destroy();
   var timedEvent = _scene.time.delayedCall(3000, function () {
     skull.destroy();
     lives--;
+    clearLevel();
     if (lives == 0)
       _gameState = gameState.GameOver;
     else
@@ -324,27 +334,50 @@ function bulletHitEnemy(bullet, enemy) {
     enemy.destroy();
     bullet.destroy();
   } else {
-    enemy.x += bullet.xVel;
-    enemy.y += bullet.yVel;
+    enemy.x += bullet.velX;
+    enemy.y += bullet.velY;
     bullet.destroy();
   }
 }
 
-function makeExplosion(enemy) {
-  for (var i = 0; i < colors.length; i++) {
-    var colorDefinition = colors[i];
-    var numberOfParticles = 10; //getNumberOfParticles();
-    for (var j = 0; j < numberOfParticles; j++) {
-      var particle = {
-        dirn: Math.random() * 2 * Math.PI,
-        speed: Math.random() * 4,
-        x: enemy.x,
-        y: enemy.y,
-        color: colorDefinition,
-        radius: 5
-      };
-      createParticle(particle);
+function moveProgs(enemy) {
+  var du = 1;
+  if (Math.random() < 0.02) {
+    //2% chance to change direction
+
+    var n = Math.floor(Math.random() * 4);
+    switch (n) {
+      case 0:
+        enemy.velX = -enemy.speed;
+        break;
+      case 1:
+        enemy.velY = -enemy.speed;
+        break;
+      case 2:
+        enemy.velX = enemy.speed;
+        break;
+      case 3:
+        enemy.velY = enemy.speed;
     }
+  }
+  enemy.x += enemy.velX * du;
+  enemy.y += enemy.velY * du;
+
+}
+
+function makeExplosion(enemy) {
+  var numberOfParticles = getNumberOfParticles();
+  for (var j = 0; j < numberOfParticles; j++) {
+    var colorDefinition = colors[Phaser.Math.Between(0, colors.length)];
+    var particle = {
+      dirn: Math.random() * 2 * Math.PI,
+      speed: Math.random() * 4,
+      x: enemy.x,
+      y: enemy.y,
+      color: colorDefinition,
+      radius: 5
+    };
+    createParticle(particle);
   }
 };
 
@@ -477,19 +510,19 @@ function moveQuarks(quark) {
     var n = Math.floor(Math.random() * 4);
     switch (n) {
       case 0:
-        brain.anims.play(quark.name + 'WalkLeft');
+        quark.anims.play(quark.name + 'WalkLeft');
         quark.velX = -quark.baseSpeed;
         break;
       case 1:
-        brain.anims.play(quark.name + 'WalkUpDown');
+        quark.anims.play(quark.name + 'WalkUpDown');
         quark.velY = -quark.baseSpeed;
         break;
       case 2:
-        brain.anims.play(quark.name + 'WalkRight');
+        quark.anims.play(quark.name + 'WalkRight');
         quark.velX = quark.baseSpeed;
         break;
       case 3:
-        brain.anims.play(quark.name + 'WalkUpDown');
+        quark.anims.play(quark.name + 'WalkUpDown');
         quark.velY = quark.baseSpeed;
     }
     quark.x += quark.velX * du;

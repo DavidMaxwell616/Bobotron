@@ -40,6 +40,7 @@ function create() {
   Bullets = this.physics.add.group();
   Particles = this.physics.add.group();
   Logos = this.physics.add.group();
+  ExtraLives = this.physics.add.group();
   Rewards = this.physics.add.group();
   maxxdaddy = this.add.image(0, 0, 'maxxdaddy');
   maxxdaddy
@@ -50,13 +51,16 @@ function create() {
     bulletHitEnemy(bullet, enemy);
   });
 
-  // this.physics.add.collider(Enemies, Family, function (enemy, member) {
-  //   enemyHitFamily(enemy, member);
-  // });
+  this.physics.add.collider(Enemies, Family, function (enemy, member) {
+    enemyHitFamily(enemy, member);
+  });
 
-  // this.physics.add.collider(Enemies, Protagonist, function (enemy, player) {
-  //   enemyHitProtagonist(enemy, player);
-  // });
+  Protagonist = this.physics.add.sprite(gameWidth / 2, gameHeight / 2, 'spriteMap', 'Protagonist_07.png');
+  Protagonist.visible = false;
+
+  this.physics.add.collider(Protagonist, Enemies, function (player, enemy) {
+    protagonistHitEnemy(player, enemy);
+  });
 
   this.physics.add.collider(Rewards, Protagonist, function (reward, player) {
     protagonistHitReward(reward, player);
@@ -320,6 +324,7 @@ function clearLevel() {
   Family.clear(true);
   Particles.clear(true);
   Enemies.clear(true);
+  Rewards.clear(true);
   Bullets.clear(true);
   Protagonist.x = gameWidth / 2;
   Protagonist.y = gameHeight / 2;
@@ -372,7 +377,8 @@ function renderLevel() {
 
   // Display remaining lives
   for (var i = 1; i < lives; i++) {
-    _scene.add.image(Extralife, gameWidth - i * 20, 15);
+    var extralife = _scene.physics.add.sprite(gameWidth - i * 20, 15, 'spriteMap', 'extralife.png');
+    ExtraLives.add(extralife);
   }
 
   // Display border

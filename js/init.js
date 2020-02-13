@@ -8,9 +8,9 @@ function initEntities(levelData) {
   initElectrodes(levelData[1]);
   initGrunts(levelData[2]);
   initHulks(levelData[3]);
-  //  initSpheroids(levelData[4]);
-  //  initBrains(levelData[5]);
-  //  initQuarks(levelData[6]);
+  initSpheroids(levelData[4]);
+  //initBrains(levelData[5]);
+  //initQuarks(levelData[6]);
   //drawSprite();
 }
 //LEVEL STUFF
@@ -88,7 +88,7 @@ function findClosestFamilyMember(posX, posY) {
 
 function initProtagonist() {
   var _bulletVel = 10;
-  Protagonist = _scene.add.sprite(gameWidth / 2, gameHeight / 2, 'spriteMap', 'Protagonist_07.png');
+  Protagonist.visible = true;
   Protagonist.speed = 1;
   Protagonist.name = 'Protagonist';
   initPeopleAnimations(Protagonist);
@@ -261,7 +261,6 @@ function initHulks(number) {
   for (let index = 0; index < number; index++) {
     var playerSafeDist = 120;
     var descr = findSpawn(playerSafeDist);
-    console.log(descr.x, descr.y);
     var hulk = _scene.add.sprite(descr.x, descr.y, 'spriteMap', 'Hulk_01.png');
     hulk.killFamily = true;
     hulk.stepsize = 12;
@@ -297,6 +296,14 @@ function initQuarks(number) {
     setupAnimation(quark, 7, 9, 'WalkRight');
     Enemies.add(quark);
   }
+};
+
+function createProg(x, y) {
+  var prog = _scene.add.sprite(x, y, 'spriteMap', 'Prog_01.png');
+  prog.speed = 1.5;
+  prog.name = 'Prog';
+  initPeopleAnimations(prog);
+  Enemies.add(prog);
 };
 
 function initBrains(number) {
@@ -344,19 +351,6 @@ var electrodes = {
   5: 'Checkers',
   6: 'BlackDiamond'
 };
-
-function initProg(x, y) {
-  var prog = _scene.add.sprite(x, y, 'spriteMap', 'Prog_01.png');
-  prog.speed = 1.5;
-  prog.renderPos = {
-    x: 0,
-    y: 0
-  };
-  prog.stepsize = 15;
-  prog.facing = 0;
-  Enemies.add(prog);
-};
-
 
 function initTank(x, y) {
   var tank = _scene.add.sprite(x, y, 'spriteMap', 'Tank_01.png');
@@ -545,8 +539,8 @@ function makeWarpParticles() {
     var colorDefinition = colors[i];
     var numberOfParticles = colorDefinition.ratio * Particles.getChildren().Length;
     for (var j = 0; j < numberOfParticles; j++) {
-      var direction = Phaser.Between(0, Math.PI * 2);
-      var speed = Phaser.Between(0, 2);
+      var direction = Phaser.Math.Between(0, Math.PI * 2);
+      var speed = Phaser.Math.Between(0, 2);
       var distance = speed * particle.lifeSpan;
 
       var particle = {
@@ -606,7 +600,7 @@ function createParticle(descr) {
 function Particle(descr) {
   var newSprite;
   var _graphics = _scene.add.graphics();
-  var circle = new Phaser.Geom.Circle(0, 0, descr.radius);
+  var circle = new Phaser.Geom.Circle(descr.radius / 2, descr.radius / 2, descr.radius);
   _graphics.fillStyle(descr.color, 1);
   _graphics.fillCircleShape(circle);
   var texture = _graphics.generateTexture('particle', descr.radius * 2, descr.radius * 2);
