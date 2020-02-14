@@ -2,15 +2,14 @@ var _scene;
 
 function initEntities(levelData) {
   // Key:
-  // Family, Electrodes, Grunts, Hulks, Spheroids, Brains, Quarks (not the Star Trek DS9 version)
   initProtagonist();
   initFamily(levelData[0]);
   initElectrodes(levelData[1]);
   initGrunts(levelData[2]);
   initHulks(levelData[3]);
   initSpheroids(levelData[4]);
-  //initBrains(levelData[5]);
-  //initQuarks(levelData[6]);
+  initBrains(levelData[5]);
+  initQuarks(levelData[6]);
   //drawSprite();
 }
 //LEVEL STUFF
@@ -19,9 +18,10 @@ var _levelSpecs = [
   // Each number in the level array represents how many entities of the
   // corresponding type should be created. There is always one protagonist,
   // so we skip him in the level description
+  // Family, Electrodes, Grunts, Hulks, Spheroids, Brains, Quarks (not the Star Trek DS9 version)
 
   [], // level "0", skipped automatically
-  [2, 1, 1, 1, 1, 1, 1],
+  [2, 1, 1, 0, 0, 1, 1],
   [2, 0, 6],
   [3, 4, 8, 2],
   [5, 6, 10, 4]
@@ -66,8 +66,8 @@ function startLevel(scene) {
 }
 
 function drawSprite() {
-  for (let index = 1; index < 14; index++) {
-    var dad = _scene.add.sprite(index * 20 + 50, gameHeight / 2 + 50, 'spriteMap', 'Quark_0' + index + '.png');
+  for (let index = 1; index < 10; index++) {
+    var dad = _scene.add.sprite(index * 20 + 50, gameHeight / 2 + 50, 'spriteMap', 'Brain_0' + index + '.png');
 
   }
 }
@@ -269,6 +269,7 @@ function initHulks(number) {
     hulk.facing = 0;
     hulk.takeBulletHit = true;
     hulk.name = 'Hulk';
+    hulk.value = scoreValues.Hulk * multiplier;
     hulk.velX = 0;
     hulk.velY = 0;
     setupAnimation(hulk, 1, 3, 'WalkLeft');
@@ -288,6 +289,7 @@ function initQuarks(number) {
     quark.velY = quark.baseSpeed * randTrinary();
     quark.tanksSpawned = 0;
     quark.maxTanks = 6;
+    quark.value = scoreValues.Quark * multiplier;
     quark.takeBulletHit = false;
     quark.bootTime = 2 * SECS_TO_NOMINALS;
     quark.name = 'Quark';
@@ -314,6 +316,7 @@ function initBrains(number) {
     brain.killFamily = true;
     brain.stepsize = 3;
     brain.makesProgs = true;
+    brain.value = scoreValues.Brain * multiplier;
     brain.takeBulletHit = false;
     brain.missileFireChance = 0.005; // 0.5% chance of firing a CM per update
     // TODO: Find a good firing interval for the missiles.
@@ -321,6 +324,8 @@ function initBrains(number) {
     brain.bootTime = SECS_TO_NOMINALS;
     brain.facing = 0;
     brain.name = 'Brain';
+    brain.velX = 0;
+    brain.velY = 0;
     setupAnimation(brain, 1, 3, 'WalkLeft');
     setupAnimation(brain, 4, 6, 'WalkUpDown');
     setupAnimation(brain, 7, 9, 'WalkRight');
@@ -356,6 +361,7 @@ function initTank(x, y) {
   var tank = _scene.add.sprite(x, y, 'spriteMap', 'Tank_01.png');
   tank.shellFireChance = 0.01; //1% chance of firing a shell/update
   tank.ammo = 20;
+  tank.value = scoreValues.Tank * multiplier;
   tank.dropChance = 1; // 100% chance of a random drop
   tank.stepsize = 3;
   Enemies.add(tank);
@@ -369,6 +375,7 @@ function initSpheroids(number) {
     spheroid.baseSpeed = 3;
     spheroid.velX = spheroid.baseSpeed * randTrinary();
     spheroid.velY = spheroid.baseSpeed * randTrinary();
+    spheroid.value = scoreValues.Spheroid * multiplier;
     spheroid.tanksSpawned = 0;
     makeWarpParticles();
     // TODO play spawning sound?
@@ -389,6 +396,7 @@ function createEnforcer(x, y) {
   enforcer.sparkFireChance = 0.01; //1% chance of firing a spark/update
   enforcer.spawnTime = SECS_TO_NOMINALS;
   enforcer.name = 'Enforcer';
+  enforcer.value = scoreValues.Enforcer * multiplier;
   setupAnimation(enforcer, 1, 3, 'Left');
   setupAnimation(enforcer, 4, 6, 'Right');
   Enemies.add(enforcer);
@@ -396,14 +404,19 @@ function createEnforcer(x, y) {
 
 function fireCruiseMissile(x, y) {
   var graphics = _scene.add.graphics();
-  var circle = new Phaser.Geom.Circle(2, 2, 4);
-  graphics.fillStyle("grey", 1);
+  var circle = new Phaser.Geom.Circle(4, 4, 2);
+  graphics.fillStyle(0xffffff, 1);
   graphics.fillCircleShape(circle);
-  var texture = graphics.generateTexture('missile', 4, 4);
-  newSprite = _scene.add.sprite(x, y, 'bullet');
-  newSprite.lifeSpan = 5 * SECS_TO_NOMINALS;
+  circle = new Phaser.Geom.Circle(4, 4, 4);
+  graphics.fillStyle(0x808080, 1);
+  graphics.fillCircleShape(circle);
+  var texture = graphics.generateTexture('missile', 8, 8);
+  newSprite = _scene.add.sprite(x, y, 'missile');
+  newSprite.lifeSpan = 200;
+  newSprite.velX = Math.cos(newSprite.x - Protagonist.x) * 3;
+  newSprite.velY = Math.sin(newSprite.y - Protagonist.y) * 3;
   newSprite.setOrigin(.5);
-  newSprite.name = 'missile';
+  newSprite.name = 'Missile';
   graphics.destroy();
   Enemies.add(newSprite);
 };

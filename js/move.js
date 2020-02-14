@@ -34,6 +34,9 @@ function moveEnemies() {
       case "Enforcer":
         moveEnforcers(element);
         break;
+      case "Missile":
+        moveMissiles(element);
+        break;
       default:
         break;
     }
@@ -74,6 +77,15 @@ function moveGrunt(grunt) {
   grunt.y += velY * du;
 }
 
+function moveMissiles(missile) {
+  var du = 1;
+  missile.lifeSpan--;
+  if (missile.lifeSpan == 0)
+    missile.destroy();
+  missile.x += missile.velX * du;
+  missile.y += missile.velY * du;
+}
+
 function moveBrains(brain) {
   var du = 1;
   var target = findTarget(brain);
@@ -99,7 +111,6 @@ function moveBrains(brain) {
       brain.anims.play(brain.name + 'WalkUpDown');
       brain.velY = -1;
     }
-
     brain.x += brain.velX * du;
     brain.y += brain.velY * du;
   }
@@ -300,7 +311,7 @@ function moveBullets() {
 };
 
 function enemyHitFamily(enemy, member) {
-  if (enemy.makeProgs) {
+  if (enemy.name == 'Brain') {
     createProg(member.x, member.y);
     member.destroy();
   } else {
@@ -314,7 +325,11 @@ function enemyHitFamily(enemy, member) {
 
 function protagonistHitEnemy(player, enemy) {
   var skull = _scene.add.sprite(player.x, player.y, 'spriteMap', 'Skull.png');
-  player.destroy();
+  player.visible = false;
+  if (enemy.name == 'Missile') {
+    makeExplosion(enemy);
+    enemy.destroy();
+  }
   var timedEvent = _scene.time.delayedCall(3000, function () {
     skull.destroy();
     lives--;
