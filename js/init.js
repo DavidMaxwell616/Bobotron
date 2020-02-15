@@ -21,7 +21,6 @@ var _levelSpecs = [
   // Family, Electrodes, Grunts, Hulks, Spheroids, Brains, Quarks (not the Star Trek DS9 version)
 
   [], // level "0", skipped automatically
-  [2, 1, 1, 0, 0, 1, 1],
   [2, 0, 6],
   [3, 4, 8, 2],
   [5, 6, 10, 4]
@@ -42,6 +41,7 @@ var scoreValues = {
   Family: 1000,
   Powerup: 300
 };
+
 
 function startLevel(scene) {
   // Create a fresh level
@@ -67,7 +67,7 @@ function startLevel(scene) {
 
 function drawSprite() {
   for (let index = 1; index < 10; index++) {
-    var dad = _scene.add.sprite(index * 20 + 50, gameHeight / 2 + 50, 'spriteMap', 'Brain_0' + index + '.png');
+    var dad = _scene.add.sprite(index * 20 + 50, gameHeight / 2 + 50, 'spriteMap', 'Prog_0' + index + '.png');
 
   }
 }
@@ -169,9 +169,8 @@ function setupAnimation(entity, start, end, movement) {
 }
 
 function initFamily(number) {
-
   var playerSafeDist = 120;
-
+  var descr = findSpawn(playerSafeDist);
   var dad = _scene.add.sprite(0, 0, 'spriteMap', 'Dad_01.png');
   var descr = findSpawn(playerSafeDist);
   dad.setPosition(descr.x, descr.y);
@@ -304,7 +303,11 @@ function createProg(x, y) {
   var prog = _scene.add.sprite(x, y, 'spriteMap', 'Prog_01.png');
   prog.speed = 1.5;
   prog.name = 'Prog';
-  initPeopleAnimations(prog);
+  prog.velX = 0;
+  prog.velY = 0;
+  setupAnimation(prog, 1, 3, 'WalkLeft');
+  setupAnimation(prog, 4, 6, 'WalkUpDown');
+  setupAnimation(prog, 7, 9, 'WalkRight');
   Enemies.add(prog);
 };
 
@@ -405,7 +408,7 @@ function createEnforcer(x, y) {
 function fireCruiseMissile(x, y) {
   var graphics = _scene.add.graphics();
   var circle = new Phaser.Geom.Circle(4, 4, 2);
-  graphics.fillStyle(0xffffff, 1);
+  graphics.fillStyle(0xff0000, 1);
   graphics.fillCircleShape(circle);
   circle = new Phaser.Geom.Circle(4, 4, 4);
   graphics.fillStyle(0x808080, 1);

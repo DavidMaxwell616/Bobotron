@@ -314,6 +314,11 @@ function enemyHitFamily(enemy, member) {
   if (enemy.name == 'Brain') {
     createProg(member.x, member.y);
     member.destroy();
+  } else if (enemy.name == 'Missile') {
+    var skull = _scene.add.sprite(member.x, member.y, 'spriteMap', 'Skull.png');
+    member.destroy();
+    makeExplosion(enemy);
+    enemy.destroy();
   } else {
     var skull = _scene.add.sprite(member.x, member.y, 'spriteMap', 'Skull.png');
     member.destroy();
@@ -364,15 +369,19 @@ function moveProgs(enemy) {
     switch (n) {
       case 0:
         enemy.velX = -enemy.speed;
+        enemy.anims.play(enemy.name + 'WalkLeft');
         break;
       case 1:
         enemy.velY = -enemy.speed;
+        enemy.anims.play(enemy.name + 'WalkUpDown');
         break;
       case 2:
         enemy.velX = enemy.speed;
+        enemy.anims.play(enemy.name + 'WalkRight');
         break;
       case 3:
         enemy.velY = enemy.speed;
+        enemy.anims.play(enemy.name + 'WalkUpDown');
     }
   }
   enemy.x += enemy.velX * du;

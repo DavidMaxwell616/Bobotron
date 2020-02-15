@@ -47,11 +47,11 @@ function create() {
     .setPosition(gameWidth - maxxdaddy.width, gameHeight - maxxdaddy.height)
     .setOrigin(0);
 
-  this.physics.add.collider(Bullets, Enemies, function(bullet, enemy) {
+  this.physics.add.collider(Bullets, Enemies, function (bullet, enemy) {
     bulletHitEnemy(bullet, enemy);
   });
 
-  this.physics.add.collider(Enemies, Family, function(enemy, member) {
+  this.physics.add.collider(Enemies, Family, function (enemy, member) {
     enemyHitFamily(enemy, member);
   });
 
@@ -63,15 +63,15 @@ function create() {
   );
   Protagonist.visible = false;
 
-  this.physics.add.collider(Protagonist, Enemies, function(player, enemy) {
+  this.physics.add.collider(Protagonist, Enemies, function (player, enemy) {
     protagonistHitEnemy(player, enemy);
   });
 
-  this.physics.add.collider(Rewards, Protagonist, function(reward, player) {
+  this.physics.add.collider(Rewards, Protagonist, function (reward, player) {
     protagonistHitReward(reward, player);
   });
 
-  _gameState = gameState.Playing;
+  _gameState = gameState.Menu;
 }
 
 function updateStats() {
@@ -200,7 +200,7 @@ function renderMenu() {
     addLogo(16, index * 32 + 16, 0, -1, frame);
     addLogo(gameWidth - 16, index * 32 + 16, 0, 1, frame);
   }
-  _scene.input.keyboard.on('keydown_R', function(event) {
+  _scene.input.keyboard.on('keydown_R', function (event) {
     if (_gameState != gameState.Menu) return;
     splash.destroy();
     _gameState = gameState.Transition;
@@ -268,8 +268,7 @@ function renderGameOver() {
   var gameOverText = _scene.add.text(
     gameWidth / 2,
     gameHeight / 2,
-    'GAME OVER',
-    {
+    'GAME OVER', {
       fontFamily: 'Arial',
       fontSize: '60px',
       fill: 'red',
@@ -277,7 +276,7 @@ function renderGameOver() {
   );
   var timedEvent = _scene.time.delayedCall(
     3000,
-    function() {
+    function () {
       gameOverText.destroy();
       _gameState = gameState.Menu;
     },
@@ -309,7 +308,7 @@ function update() {
       } else {
         moveEntities(this);
         updateStats();
-        var enemiesLeft = Enemies.getChildren().filter(function(value) {
+        var enemiesLeft = Enemies.getChildren().filter(function (value) {
           return value.name != 'Hulk';
         });
         if (enemiesLeft == 0 && Particles.getLength() == 0) {

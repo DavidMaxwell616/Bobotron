@@ -1,5 +1,6 @@
 // CANVAS OPS
 // ==========
+var g_Debug = true;
 
 function clearCanvas(ctx) {
   var prevfillStyle = ctx.fillStyle;
@@ -19,7 +20,7 @@ function clearCanvas(ctx) {
 };
 
 function randTrinary() {
-  return Math.floor(Math.random()*3)-1;
+  return Math.floor(Math.random() * 3) - 1;
 }
 
 function distSq(x1, y1, x2, y2) {
@@ -111,14 +112,12 @@ function generateLevel(L) {
       randomlevel.push(10); // Family
       randomlevel.push(3 + Math.floor(L / 3)); // Electrodes
       if (Math.random() < 0.5) {
-        if (g_Debug) console.log("enforcers/tanks");
         randomlevel.push(0); // Grunts
         randomlevel.push(0); // Hulks
         randomlevel.push(4 + Math.floor(L / 3)); // Spheroids
         randomlevel.push(0); // Brains
         randomlevel.push(2 + Math.floor(Math.random() * L / 4)); // Quarks
       } else {
-        if (g_Debug) console.log("hulks");
         randomlevel.push(Math.floor(Math.random() * 5) + 4); // Grunts
         randomlevel.push(6 + Math.floor(L / 2)); // Hulks
         randomlevel.push(Math.floor(Math.random() * 3)); // Spheroids
@@ -126,7 +125,6 @@ function generateLevel(L) {
       break;
     case L > 27:
       // Normal wave + a few Quarks
-      if (g_Debug) console.log("normal+");
       randomlevel.push(10); // Family
       randomlevel.push(3 + Math.floor(L / 3)); // Electrodes
       randomlevel.push(Math.floor(Math.random() * 6) + L); // Grunts
@@ -137,7 +135,6 @@ function generateLevel(L) {
       break;
     default:
       // Normal wave
-      if (g_Debug) console.log("normal");
       randomlevel.push(10); // Family
       randomlevel.push(3 + Math.floor(L / 3)); // Electrodes
       randomlevel.push(Math.floor(Math.random() * 6) + L); // Grunts
