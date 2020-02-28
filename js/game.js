@@ -252,6 +252,7 @@ function renderLevelChanger() {
     _gameState = gameState.Playing;
     //   _levelRendered = false;
     _levelStarted = false;
+    graphics.clear();
     _changingTimer = 2 * SECS_TO_NOMINALS;
   }
 }

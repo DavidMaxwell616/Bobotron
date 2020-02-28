@@ -20,7 +20,6 @@
       update: update,
     },
   };
-
   var width = config.width;
   var height = config.height;
   var game = new Phaser.Game(config);
@@ -121,6 +120,7 @@ var _gameState;
     _gameState = gameState.Menu;
        _menuRendered = false;
     _changingTimer = 2 * SECS_TO_NOMINALS;
+    graphics.clear();
   }
 }
 
