@@ -34,6 +34,9 @@ function create() {
   graphics = this.add.graphics();
   _changingTimer = 2 * SECS_TO_NOMINALS;
   makeColorArray();
+  rects = _scene.add.group();
+  nextRect = _scene.time.now + rectDelay;
+  colorNum = 0;
 
   Family = this.physics.add.group();
   Enemies = this.physics.add.group();
@@ -44,7 +47,7 @@ function create() {
   Rewards = this.physics.add.group();
   maxxdaddy = this.add.image(0, 0, 'maxxdaddy');
   maxxdaddy
-    .setPosition(gameWidth - maxxdaddy.width, gameHeight - maxxdaddy.height)
+    .setPosition(gameWidth - maxxdaddy.width-35, gameHeight - maxxdaddy.height*2)
     .setOrigin(0);
 
   this.physics.add.collider(Bullets, Enemies, function (bullet, enemy) {
@@ -82,86 +85,6 @@ function updateStats() {
   //livesText.setText('LIVES: ' + lives);
 }
 
-function renderLevelChanger() {
-  var halfWidth = gameWidth / 2;
-  var halfHeight = (gameHeight - wallTop) / 2;
-  var yMiddle = wallTop + halfHeight;
-  var layerOffsetX = 5;
-  var layerOffsetY = halfHeight / (halfWidth / layerOffsetX);
-  var layers = halfWidth / layerOffsetX;
-  // if (_isRefreshingLevel) {
-  //   var alpha;
-  //   if (_changingTimer > SECS_TO_NOMINALS) {
-  //     alpha = (2 * SECS_TO_NOMINALS - _changingTimer) / SECS_TO_NOMINALS;
-  //   } else {
-  //     alpha = _changingTimer / SECS_TO_NOMINALS;
-  //     if (alpha < 0) alpha = 0;
-  //     // entityManager.clearPartial();
-  //     // entityManager.resetPos();
-  //   }
-  //   var rect = new Phaser.Geom.Rectangle(
-  //     wallLeft,
-  //     wallTop + wallThickness,
-  //     wallRight - wallThickness,
-  //     wallBottom - wallThickness,
-  //   );
-  //   graphics.fillStyle(0xff0000, alpha);
-  //   graphics.fillRectShape(rect);
-  // } else {
-  if (_changingTimer > SECS_TO_NOMINALS) {
-    var range = (2 * SECS_TO_NOMINALS - _changingTimer) / SECS_TO_NOMINALS;
-    var currentLayer = Math.floor(range * layers);
-
-    for (var i = 1; i < currentLayer; i++) {
-      if (i % colors.length < i * colors.length) {
-        graphics.fillStyle(colors[i % colors.length], 1);
-      }
-      var rect = new Phaser.Geom.Rectangle(
-        halfWidth - i * layerOffsetX,
-        yMiddle - i * layerOffsetY,
-        i * layerOffsetX * 2,
-        i * layerOffsetY * 2,
-      );
-      graphics.fillRectShape(rect);
-    }
-  } else {
-    var range = _changingTimer / SECS_TO_NOMINALS;
-    var currentLayer = Math.ceil(range * layers);
-
-    for (var i = 1; i < currentLayer; i++) {
-      if (i % colors.length < i * colors.length) {
-        graphics.fillStyle(colors[i % colors.length], 1);
-      }
-      var rect = new Phaser.Geom.Rectangle(
-        i * layerOffsetX,
-        wallTop + i * layerOffsetY,
-        gameWidth - i * layerOffsetX * 2,
-        gameHeight - wallTop - i * layerOffsetY * 2,
-      );
-      graphics.fillRectShape(rect);
-    }
-
-    range = (SECS_TO_NOMINALS - _changingTimer) / SECS_TO_NOMINALS;
-    currentLayer = Math.ceil(range * layers);
-
-    graphics.fillStyle(0x000000, 1);
-    var rect = new Phaser.Geom.Rectangle(
-      halfWidth - currentLayer * layerOffsetX,
-      yMiddle - currentLayer * layerOffsetY,
-      currentLayer * layerOffsetX * 2,
-      currentLayer * layerOffsetY * 2,
-    );
-    graphics.fillRectShape(rect);
-  }
-  // }
-  //graphics.restore();
-  // graphics.clear();
-  // Reset changing timer when level changing is complete
-  if (_changingTimer < 0) {
-    _gameState = gameState.Playing;
-    _changingTimer = 2 * SECS_TO_NOMINALS;
-  }
-}
 
 function animateMenu() {
   var members = Logos.getChildren();
@@ -200,9 +123,11 @@ function renderMenu() {
     addLogo(16, index * 32 + 16, 0, -1, frame);
     addLogo(gameWidth - 16, index * 32 + 16, 0, 1, frame);
   }
-  _scene.input.keyboard.on('keydown_R', function (event) {
+  _scene.input.keyboard.on('keydown_SPACE', function (event) {
     if (_gameState != gameState.Menu) return;
     splash.destroy();
+    _isRefreshingLevel = true;
+    nextRect = _scene.time.now + rectDelay;
     _gameState = gameState.Transition;
     Logos.clear(true);
   });
@@ -211,50 +136,37 @@ function renderMenu() {
 
 function renderLevelChanger() {
   var halfWidth = gameWidth / 2;
-
   var halfHeight = (gameHeight - wallTop) / 2;
-  var yMiddle = wallTop + halfHeight;
-  var layerOffsetX = 5;
-  var layerOffsetY = halfHeight / (halfWidth / layerOffsetX);
-  var layers = halfWidth / layerOffsetX;
-
-  if (_changingTimer > SECS_TO_NOMINALS) {
-    var range = (2 * SECS_TO_NOMINALS - _changingTimer) / SECS_TO_NOMINALS;
-    var currentLayer = Math.floor(range * layers);
-
-    for (var i = 1; i < currentLayer; i++) {
-      if (i % colors.length < i * colors.length) {
-        graphics.fillStyle(colors[i % colors.length], 1);
-      }
-      var rect = new Phaser.Geom.Rectangle(
-        halfWidth - i * layerOffsetX,
-        yMiddle - i * layerOffsetY,
-        i * layerOffsetX * 2,
-        i * layerOffsetY * 2,
-      );
-      graphics.fillRectShape(rect);
-    }
-  } else {
-    range = (SECS_TO_NOMINALS - _changingTimer) / SECS_TO_NOMINALS;
-    currentLayer = Math.ceil(range * layers);
-
-    var rect = new Phaser.Geom.Rectangle(
-      halfWidth - currentLayer * layerOffsetX,
-      yMiddle - currentLayer * layerOffsetY,
-      currentLayer * layerOffsetX * 2,
-      currentLayer * layerOffsetY * 2,
-    );
-    graphics.fillStyle(0x000000, 1);
-    graphics.fillRectShape(rect);
-  }
-  // Reset changing timer when level changing is complete
-  if (_changingTimer < 0) {
-    _gameState = gameState.Playing;
+  if(rects.children.entries.length<halfWidth/rectStep){
+    var r = _scene.add.rectangle(halfWidth, halfHeight, rectWidth, rectHeight);
+    var color = Phaser.Display.Color.HexStringToColor(colors[colorNum]).color;
+    r.setStrokeStyle(5, color);
+    rects.add(r);
+    rectWidth+=10;
+    rectHeight+=9;     
+    nextRect = _scene.time.now + rectDelay;
+    colorNum++
+    if(colorNum>31)colorNum=0;
+}
+else
+{
+if(rectCount<rects.children.entries.length){
+rects.children.entries[0].destroy();
+rectCount++;
+}
+else{
+  rectCount=0;
+  rects.clear();
+  rectWidth=10;
+  rectHeight=5;
+  _isRefreshingLevel = false;
+  _gameState = gameState.Playing;
     //   _levelRendered = false;
     _levelStarted = false;
     graphics.clear();
-    _changingTimer = 2 * SECS_TO_NOMINALS;
   }
+}
+
 }
 
 function addLogo(x, y, xv, yv, f) {
@@ -295,11 +207,11 @@ function update() {
       else animateMenu();
       break;
     case gameState.Transition:
-      renderLevelChanger();
-      _changingTimer -= 1;
+      if(_isRefreshingLevel && _scene.time.now<nextRect)       
+         renderLevelChanger();
       break;
     case gameState.Playing:
-      if (!_levelRendered) {
+       if (!_levelRendered) {
         renderLevel();
         _levelRendered = true;
       }
@@ -315,8 +227,10 @@ function update() {
         if (enemiesLeft == 0 && Particles.getLength() == 0) {
           clearLevel();
           level++;
-          _gameState = gameState.Transition;
-        }
+          _isRefreshingLevel = true;
+          nextRect = _scene.time.now + rectDelay;
+           _gameState = gameState.Transition;
+         }
       }
       break;
     default:

@@ -1,0 +1,117 @@
+<html>
+
+<head>
+  <script src="js/phaser.min.js"></script>
+  </script>
+</head>
+
+<body>
+  <div id="game"></div>
+</body>
+<script>
+  var config = {
+    type: Phaser.AUTO,
+    width: 640,
+    height: 480,
+    parent: 'game',
+    scene: {
+      preload: preload,
+      create: create,
+      update: update,
+    },
+  };
+  var width = config.width;
+  var height = config.height;
+  var game = new Phaser.Game(config);
+  var graphics;
+  var _scene;
+ var nextRect;
+ var rectStep = 3;
+var rects;
+var rectColor = 0xffffff;
+var rectWidth = 10;
+var rectCount = 0;
+var rectHeight = 5;
+var rectDelay = 500;
+var colorNum;
+  var _menuRendered = false;
+  var _isRefreshingLevel = true;
+  var _startRefresh = true;
+  var wallThickness = 5,
+    wallTop = 30,
+    wallBottom = height - 5,
+    wallLeft = 5,
+    wallRight = width - 5,
+    colors = [];
+    var gameState = {
+  Menu: 0,
+  Transition: 1,
+  Playing: 2,
+  GameOver: 3
+}
+var _gameState;
+
+  function preload() {
+  
+  }
+
+  function create() {
+    _scene = this;
+    graphics = _scene.add.graphics(0,0);
+rects = _scene.add.group();
+nextRect = _scene.time.now + rectDelay;
+createColorArray();
+colorNum = 0;
+}
+
+function updateIntro(){
+ if(rects.children.entries.length<width/2/rectStep){
+      var r = _scene.add.rectangle(width/2, height/2, rectWidth, rectHeight);
+      var color = Phaser.Display.Color.HexStringToColor(colors[colorNum]).color;
+      r.setStrokeStyle(3, color);
+      rects.add(r);
+      rectWidth+=6;
+      rectHeight+=5;     
+      nextRect = _scene.time.now + rectDelay;
+      colorNum++
+      if(colorNum>31)colorNum=0;
+ }
+ else
+ {
+  if(rects.children.entries.length>0){
+rects.children.entries[0].destroy();
+  }
+  else{
+    rectCount=0;
+    _isRefreshingLevel = false;
+  }
+ }
+}
+
+
+
+function RGB2Color(r,g,b) {
+        return '#' + this.byte2Hex(r) + this.byte2Hex(g) + this.byte2Hex(b);
+    };
+
+    function byte2Hex(n) {
+        return String("0123456789ABCDEF".substr((n >> 4) & 0x0F,1)) + "0123456789ABCDEF".substr(n & 0x0F,1);
+    };
+
+    //Called when initializing the game
+    function createColorArray() {
+        for (var i = 0; i < 32; ++i) {
+            var r = Math.sin(0.2*i + 0) * 127 + 128;
+            var g = Math.sin(0.2*i + 2) * 127 + 128;
+            var b = Math.sin(0.2*i + 4) * 127 + 128;
+            colors.push(this.RGB2Color(r,g,b));
+        }
+    };
+
+  function update() {
+    if(_isRefreshingLevel && _scene.time.now<nextRect)       
+      updateIntro();
+    }
+</script>
+
+</html>

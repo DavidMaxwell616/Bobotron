@@ -41,6 +41,17 @@ let levelOver = false;
 let levelOverTimer = 0;
 let playerXSpeed = 0;
 let playerYSpeed = 0;
+
+var rectStep = 5;
+var rects;
+var rectColor = 0xffffff;
+var rectWidth = 10;
+var rectCount = 0;
+var rectHeight = 5;
+var colorNum;
+var _isRefreshingLevel = false;
+var rectDelay = 500;
+
 const FULL_CIRCLE = Math.PI * 2,
   RADIANS_PER_DEGREE = Math.PI / 180.0,
 

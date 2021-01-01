@@ -341,8 +341,11 @@ function protagonistHitEnemy(player, enemy) {
     clearLevel();
     if (lives == 0)
       _gameState = gameState.GameOver;
-    else
+    else{
+      _isRefreshingLevel = true;
+      nextRect = _scene.time.now + 1000;
       _gameState = gameState.Transition;
+    }
   }, [], _scene);
 }
 
