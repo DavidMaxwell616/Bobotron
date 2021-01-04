@@ -112,7 +112,7 @@ function animateMenu() {
 }
 
 function renderMenu() {
-  var splash = _scene.add.image(gameWidth / 2, gameHeight / 2, 'splash');
+  splash = _scene.add.image(gameWidth / 2, gameHeight / 2, 'splash');
   for (let index = 0; index < 25; index++) {
     var frame = index % 8;
     addLogo(index * 32 + 16, 16, 1, 0, frame);
@@ -123,15 +123,38 @@ function renderMenu() {
     addLogo(16, index * 32 + 16, 0, -1, frame);
     addLogo(gameWidth - 16, index * 32 + 16, 0, 1, frame);
   }
-  _scene.input.keyboard.on('keydown_SPACE', function (event) {
+  _scene.input.keyboard.on('keydown_SPACE', Fire);
+  _scene.input.on('pointerdown', TouchFire);
+  _menuRendered = true;
+}
+
+function Fire(){
     if (_gameState != gameState.Menu) return;
     splash.destroy();
     _isRefreshingLevel = true;
     nextRect = _scene.time.now + rectDelay;
     _gameState = gameState.Transition;
     Logos.clear(true);
-  });
-  _menuRendered = true;
+}
+
+function TouchFire(){
+  if (_gameState === gameState.Menu){
+
+  splash.destroy();
+  _isRefreshingLevel = true;
+  nextRect = _scene.time.now + rectDelay;
+  _gameState = gameState.Transition;
+  Logos.clear(true);
+}
+else if(_gameState === gameState.Playing)
+{
+  
+  var x = _scene.input.activePointer.x;
+  var y = _scene.input.activePointer.y;
+  var _bulletVelX = x>Protagonist.x+10 ? 10 : x<Protagonist.x-10?-10:0;
+  var _bulletVelY = y>Protagonist.y+10 ? 10 : y<Protagonist.y-10?-10:0;
+  fireBullet(Protagonist.x, Protagonist.y, _bulletVelX, _bulletVelY);
+}
 }
 
 function renderLevelChanger() {
