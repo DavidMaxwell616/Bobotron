@@ -12,36 +12,6 @@ function initEntities(levelData) {
   initQuarks(levelData[6]);
   //drawSprite();
 }
-//LEVEL STUFF
-
-var _levelSpecs = [
-  // Each number in the level array represents how many entities of the
-  // corresponding type should be created. There is always one protagonist,
-  // so we skip him in the level description
-  // Family, Electrodes, Grunts, Hulks, Spheroids, Brains, Quarks (not the Star Trek DS9 version)
-
-  [], // level "0", skipped automatically
-  [2, 0, 6],
-  [3, 4, 8, 2],
-  [5, 6, 10, 4]
-];
-
-var scoreValues = {
-  Electrode: 5,
-  Spark: 25,
-  Shell: 50,
-  CruiseMissile: 75,
-  Prog: 100,
-  Grunt: 100,
-  Enforcer: 200,
-  Tank: 300,
-  Brain: 500,
-  Spheroid: 1000,
-  Quark: 1000,
-  Family: 1000,
-  Powerup: 300
-};
-
 
 function startLevel(scene) {
   // Create a fresh level
@@ -49,6 +19,10 @@ function startLevel(scene) {
 
   var randomLevelRequired = level >= _levelSpecs.length;
   var L = level;
+
+  for (let index = 0; index < arrows.length; index++) {
+  arrows[index].visible = true;
+}
 
   if (randomLevelRequired) {
     var randomlevel = generateLevel(L);
@@ -350,15 +324,7 @@ function initElectrodes(number) {
   }
 };
 
-var electrodes = {
-  0: 'Triangle',
-  1: 'Square',
-  2: 'Rectangle',
-  3: 'Dizzy',
-  4: 'Diamond',
-  5: 'Checkers',
-  6: 'BlackDiamond'
-};
+
 
 function initTank(x, y) {
   var tank = _scene.add.sprite(x, y, 'spriteMap', 'Tank_01.png');

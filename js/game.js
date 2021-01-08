@@ -73,10 +73,35 @@ function create() {
   this.physics.add.collider(Rewards, Protagonist, function (reward, player) {
     protagonistHitReward(reward, player);
   });
-
+setUpArrows();
+this.input.on('gameobjectdown',onObjectClicked);
   _gameState = gameState.Menu;
 }
+function onObjectClicked(pointer,gameObject){
+switch (gameObject.name) {
+  case 'rightArrow':
+    movePlayer('right');
+    break;
 
+  default:
+    break;
+}
+}
+
+function setUpArrows(){
+ for (let index = 0; index < arrows.length; index++) {
+  var arrow = arrowStats[index];
+  var name;
+  arrows[index] = _scene.add.image(gameWidth *.15, gameHeight *.9,'arrow');
+  arrows[index].setScale(.25);
+  arrows[index].visible = false;
+  arrows[index].name= arrow.direction;
+  arrows[index].setInteractive();
+  arrows[index].angle =arrow.angle;
+ }
+ 
+ 
+}
 function updateStats() {
   levelText.setText('LEVEL: ' + level);
   scoreText.setText('SCORE: ' + score);
