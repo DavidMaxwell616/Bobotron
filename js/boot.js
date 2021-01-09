@@ -48,9 +48,9 @@ var rectColor = 0xffffff;
 var rectWidth = 10;
 var rectCount = 0;
 var rectHeight = 5;
+var rectDelay = 500;
 var colorNum;
 var _isRefreshingLevel = false;
-var rectDelay = 500;
 
 const FULL_CIRCLE = Math.PI * 2,
   RADIANS_PER_DEGREE = Math.PI / 180.0,
@@ -114,57 +114,34 @@ var isGameOver = false;
 var Logos;
 var Rewards;
 var ExtraLives;
+var arrowTouched=false;
 
 var arrows =new Array(4);
 var arrowStats = [
 {
   angle: 0,
 yOffset: 0,
-xOffset: 0,
+xOffset: 30,
 direction:'right',
 },
 {
-  angle: 45,
-yOffset: 0,
-xOffset: 0,
-direction:'right-down',
-}  ,
-{
   angle: 90,
-yOffset: 0,
+yOffset: 30,
 xOffset: 0,
 direction:'down',
 }  ,
 {
-  angle: 135,
-yOffset: 0,
-xOffset: 0,
-direction:'left-down',
-}  ,
-{
   angle: 180,
 yOffset: 0,
-xOffset: 0,
+xOffset: -30,
 direction:'left',
 }  ,
 {
-  angle: 210,
-yOffset: 0,
-xOffset: 0,
-direction:'left-up',
-}  ,
-{
   angle: 270,
-yOffset: 0,
+yOffset: -30,
 xOffset: 0,
 direction:'up',
-}  ,
-{
-  angle: 315,
-yOffset: 0,
-xOffset: 0,
-direction:'up-right',
-}    
+}  
 ];
 
 var electrodes = {

@@ -16,6 +16,7 @@ function initEntities(levelData) {
 function startLevel(scene) {
   // Create a fresh level
   _scene = scene;
+  maxxdaddy.visible = false;
 
   var randomLevelRequired = level >= _levelSpecs.length;
   var L = level;
@@ -85,6 +86,7 @@ function initProtagonist() {
   _scene.input.keyboard.on('keydown_DOWN', function (event) {
     movePlayer('down');
   });
+  if(!arrowTouched){
   //Protagonist shoots
   _scene.input.keyboard.on('keydown_Q', function (event) {
     fireBullet(Protagonist.x, Protagonist.y, -_bulletVel, -_bulletVel)
@@ -116,7 +118,7 @@ function initProtagonist() {
   _scene.input.keyboard.on('keydown_C', function (event) {
     fireBullet(Protagonist.x, Protagonist.y, _bulletVel, _bulletVel)
   });
-
+  }
 }
 
 function initPeopleAnimations(entity) {

@@ -26,7 +26,7 @@
   var graphics;
   var _scene;
  var nextRect;
- var rectStep = 3;
+ var rectStep = 10;
 var rects;
 var rectColor = 0xffffff;
 var rectWidth = 10;
@@ -70,8 +70,8 @@ function updateIntro(){
       var color = Phaser.Display.Color.HexStringToColor(colors[colorNum]).color;
       r.setStrokeStyle(3, color);
       rects.add(r);
-      rectWidth+=6;
-      rectHeight+=5;     
+      rectWidth+=10;
+      rectHeight+=8;     
       nextRect = _scene.time.now + rectDelay;
       colorNum++
       if(colorNum>31)colorNum=0;

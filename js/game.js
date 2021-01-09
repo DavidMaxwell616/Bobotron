@@ -73,16 +73,30 @@ function create() {
   this.physics.add.collider(Rewards, Protagonist, function (reward, player) {
     protagonistHitReward(reward, player);
   });
+
 setUpArrows();
 this.input.on('gameobjectdown',onObjectClicked);
   _gameState = gameState.Menu;
 }
+
 function onObjectClicked(pointer,gameObject){
-switch (gameObject.name) {
-  case 'rightArrow':
+  switch (gameObject.name) {
+  case 'right':
+    arrowTouched=true;
     movePlayer('right');
     break;
-
+  case 'left':
+    arrowTouched=true;
+    movePlayer('left');
+    break;
+  case 'up':
+    arrowTouched=true;
+    movePlayer('up');
+    break;
+  case 'down':
+    arrowTouched=true;
+    movePlayer('down');
+    break;
   default:
     break;
 }
@@ -91,13 +105,14 @@ switch (gameObject.name) {
 function setUpArrows(){
  for (let index = 0; index < arrows.length; index++) {
   var arrow = arrowStats[index];
-  var name;
-  arrows[index] = _scene.add.image(gameWidth *.15, gameHeight *.9,'arrow');
-  arrows[index].setScale(.25);
+  arrows[index] = _scene.add.image(0,0,'arrow');
+   arrows[index].setScale(.25).setOrigin(.5);
+  arrows[index].x = arrows[index].width*.25+20+arrow.xOffset;
+  arrows[index].y =gameHeight -arrows[index].width*.25+-20+arrow.yOffset;
   arrows[index].visible = false;
   arrows[index].name= arrow.direction;
   arrows[index].setInteractive();
-  arrows[index].angle =arrow.angle;
+  arrows[index].angle =arrow.angle;  
  }
  
  
@@ -178,7 +193,9 @@ else if(_gameState === gameState.Playing)
   var y = _scene.input.activePointer.y;
   var _bulletVelX = x>Protagonist.x+10 ? 10 : x<Protagonist.x-10?-10:0;
   var _bulletVelY = y>Protagonist.y+10 ? 10 : y<Protagonist.y-10?-10:0;
-  fireBullet(Protagonist.x, Protagonist.y, _bulletVelX, _bulletVelY);
+  console.log(arrowTouched);
+  if(!arrowTouched)
+    fireBullet(Protagonist.x, Protagonist.y, _bulletVelX, _bulletVelY);
 }
 }
 
@@ -188,10 +205,10 @@ function renderLevelChanger() {
   if(rects.children.entries.length<halfWidth/rectStep){
     var r = _scene.add.rectangle(halfWidth, halfHeight, rectWidth, rectHeight);
     var color = Phaser.Display.Color.HexStringToColor(colors[colorNum]).color;
-    r.setStrokeStyle(5, color);
+    r.setStrokeStyle(3, color);
     rects.add(r);
-    rectWidth+=10;
-    rectHeight+=9;     
+    rectWidth+=12;
+    rectHeight+=7;     
     nextRect = _scene.time.now + rectDelay;
     colorNum++
     if(colorNum>31)colorNum=0;
@@ -249,6 +266,8 @@ function renderGameOver() {
 // the game loop. Game logic lives in here.
 // is called every frame
 function update() {
+  arrowTouched= false;
+  
   switch (_gameState) {
     case gameState.Menu:
       if (!_menuRendered) renderMenu();
