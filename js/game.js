@@ -122,9 +122,21 @@ function updateStats() {
   scoreText.setText('SCORE: ' + score);
   ammoText.setText('AMMO: ' + ammo);
   shieldText.setText('SHIELD: ' + Math.ceil(shieldTime / SECS_TO_NOMINALS));
-  //livesText.setText('LIVES: ' + lives);
+  livesText.setText('LIVES: ' + lives);
 }
 
+function drawLives(){
+ // Display remaining lives
+ for (var i = 1; i < lives; i++) {
+  var extralife = _scene.physics.add.sprite(
+    gameWidth - i * 20,
+    15,
+    'spriteMap',
+    'extralife.png',
+  );
+  ExtraLives.add(extralife);
+}
+}
 
 function animateMenu() {
   var members = Logos.getChildren();
@@ -193,8 +205,7 @@ else if(_gameState === gameState.Playing)
   var y = _scene.input.activePointer.y;
   var _bulletVelX = x>Protagonist.x+10 ? 10 : x<Protagonist.x-10?-10:0;
   var _bulletVelY = y>Protagonist.y+10 ? 10 : y<Protagonist.y-10?-10:0;
-  console.log(arrowTouched);
-  if(!arrowTouched)
+   if(!arrowTouched)
     fireBullet(Protagonist.x, Protagonist.y, _bulletVelX, _bulletVelY);
 }
 }
@@ -244,9 +255,9 @@ function addLogo(x, y, xv, yv, f) {
 
 function renderGameOver() {
   var gameOverText = _scene.add.text(
-    gameWidth / 2,
+    gameWidth *.2,
     gameHeight / 2,
-    'GAME OVER', {
+    'G A M E  O V E R', {
       fontFamily: 'Arial',
       fontSize: '60px',
       fill: 'red',
@@ -255,6 +266,9 @@ function renderGameOver() {
   var timedEvent = _scene.time.delayedCall(
     3000,
     function () {
+    arrows.forEach(element => {
+      element.visible = false;
+    });
       gameOverText.destroy();
       _gameState = gameState.Menu;
     },
@@ -300,6 +314,9 @@ function update() {
          }
       }
       break;
+      case gameState.GameOver: 
+        renderGameOver();
+      break;
     default:
       break;
   }
@@ -321,11 +338,6 @@ function clearLevel() {
   Protagonist.velX = 0;
   Protagonist.velY = 0;
   graphics.clear();
-}
-
-function restart() {
-  lives--;
-  game.state.restart();
 }
 
 function renderLevel() {
@@ -365,16 +377,13 @@ function renderLevel() {
     fill: 'red',
   });
 
-  // Display remaining lives
-  for (var i = 1; i < lives; i++) {
-    var extralife = _scene.physics.add.sprite(
-      gameWidth - i * 20,
-      15,
-      'spriteMap',
-      'extralife.png',
-    );
-    ExtraLives.add(extralife);
-  }
+  // Display lives
+  var livestxt = 'Lives: ' + lives;
+  livesText = _scene.add.text(gameWidth / 2 + 280, 5, livestxt, {
+    fontFamily: 'Arial',
+    fontSize: '20px',
+    fill: 'red',
+  });
 
   // Display border
   graphics.fillStyle(0xffffff, 1);
@@ -404,6 +413,3 @@ function resetMultiplier() {
   multiplier = 1;
 }
 
-function restartGame() {
-  game.state.start(game.state.current);
-}

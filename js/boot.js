@@ -115,7 +115,7 @@ var Logos;
 var Rewards;
 var ExtraLives;
 var arrowTouched=false;
-
+var playerDying = false;
 var arrows =new Array(4);
 var arrowStats = [
 {

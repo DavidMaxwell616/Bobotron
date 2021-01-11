@@ -329,24 +329,30 @@ function enemyHitFamily(enemy, member) {
 }
 
 function protagonistHitEnemy(player, enemy) {
-  var skull = _scene.add.sprite(player.x, player.y, 'spriteMap', 'Skull.png');
-  player.visible = false;
+ if(!playerDying){
+ playerDying = true;
+ var skull = _scene.add.sprite(player.x, player.y, 'spriteMap', 'Skull.png');
+ lives--;
+ player.visible = false;
   if (enemy.name == 'Missile') {
     makeExplosion(enemy);
     enemy.destroy();
   }
   var timedEvent = _scene.time.delayedCall(3000, function () {
     skull.destroy();
-    lives--;
-    clearLevel();
-    if (lives == 0)
+     clearLevel();
+    if (lives == 0){
       _gameState = gameState.GameOver;
+      playerDying=false;
+    }
     else{
       _isRefreshingLevel = true;
       nextRect = _scene.time.now + 1000;
       _gameState = gameState.Transition;
-    }
+      playerDying=false;
+        }
   }, [], _scene);
+}
 }
 
 function bulletHitEnemy(bullet, enemy) {

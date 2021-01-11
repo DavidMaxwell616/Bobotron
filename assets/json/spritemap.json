@@ -1,6 +1,6 @@
 {
   "textures": [{
-    "image": "spritemap.png",
+    "image": "../images/spritemap.png",
     "format": "RGBA8888",
     "size": {
       "w": 334,
