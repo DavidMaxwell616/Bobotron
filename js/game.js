@@ -1,22 +1,4 @@
-var config = {
-  type: Phaser.AUTO,
-  width: 800,
-  height: 480,
-  parent: 'game',
-  scene: {
-    preload: preload,
-    create: create,
-    update: update,
-  },
-  physics: {
-    default: 'arcade',
-    arcade: {
-      debug: false,
-    },
-  },
-};
 
-var game = new Phaser.Game(config);
 gameWidth = config.width;
 gameHeight = config.height;
 wallBottom = gameHeight - 5;
@@ -47,7 +29,7 @@ function create() {
   Rewards = this.physics.add.group();
   maxxdaddy = this.add.image(0, 0, 'maxxdaddy');
   maxxdaddy
-    .setPosition(gameWidth - maxxdaddy.width-35, gameHeight - maxxdaddy.height*2)
+    .setPosition(gameWidth - maxxdaddy.width - 35, gameHeight - maxxdaddy.height * 2)
     .setOrigin(0);
 
   this.physics.add.collider(Bullets, Enemies, function (bullet, enemy) {
@@ -74,48 +56,48 @@ function create() {
     protagonistHitReward(reward, player);
   });
 
-setUpArrows();
-this.input.on('gameobjectdown',onObjectClicked);
+  setUpArrows();
+  this.input.on('gameobjectdown', onObjectClicked);
   _gameState = gameState.Menu;
 }
 
-function onObjectClicked(pointer,gameObject){
+function onObjectClicked(pointer, gameObject) {
   switch (gameObject.name) {
-  case 'right':
-    arrowTouched=true;
-    movePlayer('right');
-    break;
-  case 'left':
-    arrowTouched=true;
-    movePlayer('left');
-    break;
-  case 'up':
-    arrowTouched=true;
-    movePlayer('up');
-    break;
-  case 'down':
-    arrowTouched=true;
-    movePlayer('down');
-    break;
-  default:
-    break;
-}
+    case 'right':
+      arrowTouched = true;
+      movePlayer('right');
+      break;
+    case 'left':
+      arrowTouched = true;
+      movePlayer('left');
+      break;
+    case 'up':
+      arrowTouched = true;
+      movePlayer('up');
+      break;
+    case 'down':
+      arrowTouched = true;
+      movePlayer('down');
+      break;
+    default:
+      break;
+  }
 }
 
-function setUpArrows(){
- for (let index = 0; index < arrows.length; index++) {
-  var arrow = arrowStats[index];
-  arrows[index] = _scene.add.image(0,0,'arrow');
-   arrows[index].setScale(.25).setOrigin(.5);
-  arrows[index].x = arrows[index].width*.25+20+arrow.xOffset;
-  arrows[index].y =gameHeight -arrows[index].width*.25+-20+arrow.yOffset;
-  arrows[index].visible = false;
-  arrows[index].name= arrow.direction;
-  arrows[index].setInteractive();
-  arrows[index].angle =arrow.angle;  
- }
- 
- 
+function setUpArrows() {
+  for (let index = 0; index < arrows.length; index++) {
+    var arrow = arrowStats[index];
+    arrows[index] = _scene.add.image(0, 0, 'arrow');
+    arrows[index].setScale(.25).setOrigin(.5);
+    arrows[index].x = arrows[index].width * .25 + 20 + arrow.xOffset;
+    arrows[index].y = gameHeight - arrows[index].width * .25 + -20 + arrow.yOffset;
+    arrows[index].visible = false;
+    arrows[index].name = arrow.direction;
+    arrows[index].setInteractive();
+    arrows[index].angle = arrow.angle;
+  }
+
+
 }
 function updateStats() {
   levelText.setText('LEVEL: ' + level);
@@ -125,17 +107,17 @@ function updateStats() {
   livesText.setText('LIVES: ' + lives);
 }
 
-function drawLives(){
- // Display remaining lives
- for (var i = 1; i < lives; i++) {
-  var extralife = _scene.physics.add.sprite(
-    gameWidth - i * 20,
-    15,
-    'spriteMap',
-    'extralife.png',
-  );
-  ExtraLives.add(extralife);
-}
+function drawLives() {
+  // Display remaining lives
+  for (var i = 1; i < lives; i++) {
+    var extralife = _scene.physics.add.sprite(
+      gameWidth - i * 20,
+      15,
+      'spriteMap',
+      'extralife.png',
+    );
+    ExtraLives.add(extralife);
+  }
 }
 
 function animateMenu() {
@@ -180,68 +162,66 @@ function renderMenu() {
   _menuRendered = true;
 }
 
-function Fire(){
-    if (_gameState != gameState.Menu) return;
-    splash.destroy();
-    _isRefreshingLevel = true;
-    nextRect = _scene.time.now + rectDelay;
-    _gameState = gameState.Transition;
-    Logos.clear(true);
-}
-
-function TouchFire(){
-  if (_gameState === gameState.Menu){
-
+function Fire() {
+  if (_gameState != gameState.Menu) return;
   splash.destroy();
   _isRefreshingLevel = true;
   nextRect = _scene.time.now + rectDelay;
   _gameState = gameState.Transition;
   Logos.clear(true);
 }
-else if(_gameState === gameState.Playing)
-{
-  
-  var x = _scene.input.activePointer.x;
-  var y = _scene.input.activePointer.y;
-  var _bulletVelX = x>Protagonist.x+10 ? 10 : x<Protagonist.x-10?-10:0;
-  var _bulletVelY = y>Protagonist.y+10 ? 10 : y<Protagonist.y-10?-10:0;
-   if(!arrowTouched)
-    fireBullet(Protagonist.x, Protagonist.y, _bulletVelX, _bulletVelY);
-}
+
+function TouchFire() {
+  if (_gameState === gameState.Menu) {
+
+    splash.destroy();
+    _isRefreshingLevel = true;
+    nextRect = _scene.time.now + rectDelay;
+    _gameState = gameState.Transition;
+    Logos.clear(true);
+  }
+  else if (_gameState === gameState.Playing) {
+
+    var x = _scene.input.activePointer.x;
+    var y = _scene.input.activePointer.y;
+    var _bulletVelX = x > Protagonist.x + 10 ? 10 : x < Protagonist.x - 10 ? -10 : 0;
+    var _bulletVelY = y > Protagonist.y + 10 ? 10 : y < Protagonist.y - 10 ? -10 : 0;
+    if (!arrowTouched)
+      fireBullet(Protagonist.x, Protagonist.y, _bulletVelX, _bulletVelY);
+  }
 }
 
 function renderLevelChanger() {
   var halfWidth = gameWidth / 2;
   var halfHeight = (gameHeight - wallTop) / 2;
-  if(rects.children.entries.length<halfWidth/rectStep){
+  if (rects.children.entries.length < halfWidth / rectStep) {
     var r = _scene.add.rectangle(halfWidth, halfHeight, rectWidth, rectHeight);
     var color = Phaser.Display.Color.HexStringToColor(colors[colorNum]).color;
     r.setStrokeStyle(3, color);
     rects.add(r);
-    rectWidth+=12;
-    rectHeight+=7;     
+    rectWidth += 12;
+    rectHeight += 7;
     nextRect = _scene.time.now + rectDelay;
     colorNum++
-    if(colorNum>31)colorNum=0;
-}
-else
-{
-if(rectCount<rects.children.entries.length){
-rects.children.entries[0].destroy();
-rectCount++;
-}
-else{
-  rectCount=0;
-  rects.clear();
-  rectWidth=10;
-  rectHeight=5;
-  _isRefreshingLevel = false;
-  _gameState = gameState.Playing;
-    //   _levelRendered = false;
-    _levelStarted = false;
-    graphics.clear();
+    if (colorNum > 31) colorNum = 0;
   }
-}
+  else {
+    if (rectCount < rects.children.entries.length) {
+      rects.children.entries[0].destroy();
+      rectCount++;
+    }
+    else {
+      rectCount = 0;
+      rects.clear();
+      rectWidth = 10;
+      rectHeight = 5;
+      _isRefreshingLevel = false;
+      _gameState = gameState.Playing;
+      //   _levelRendered = false;
+      _levelStarted = false;
+      graphics.clear();
+    }
+  }
 
 }
 
@@ -255,20 +235,20 @@ function addLogo(x, y, xv, yv, f) {
 
 function renderGameOver() {
   var gameOverText = _scene.add.text(
-    gameWidth *.2,
+    gameWidth * .2,
     gameHeight / 2,
     'G A M E  O V E R', {
-      fontFamily: 'Arial',
-      fontSize: '60px',
-      fill: 'red',
-    },
+    fontFamily: 'Arial',
+    fontSize: '60px',
+    fill: 'red',
+  },
   );
   var timedEvent = _scene.time.delayedCall(
     3000,
     function () {
-    arrows.forEach(element => {
-      element.visible = false;
-    });
+      arrows.forEach(element => {
+        element.visible = false;
+      });
       gameOverText.destroy();
       _gameState = gameState.Menu;
     },
@@ -280,19 +260,19 @@ function renderGameOver() {
 // the game loop. Game logic lives in here.
 // is called every frame
 function update() {
-  arrowTouched= false;
-  
+  arrowTouched = false;
+
   switch (_gameState) {
     case gameState.Menu:
       if (!_menuRendered) renderMenu();
       else animateMenu();
       break;
     case gameState.Transition:
-      if(_isRefreshingLevel && _scene.time.now<nextRect)       
-         renderLevelChanger();
+      if (_isRefreshingLevel && _scene.time.now < nextRect)
+        renderLevelChanger();
       break;
     case gameState.Playing:
-       if (!_levelRendered) {
+      if (!_levelRendered) {
         renderLevel();
         _levelRendered = true;
       }
@@ -310,12 +290,12 @@ function update() {
           level++;
           _isRefreshingLevel = true;
           nextRect = _scene.time.now + rectDelay;
-           _gameState = gameState.Transition;
-         }
+          _gameState = gameState.Transition;
+        }
       }
       break;
-      case gameState.GameOver: 
-        renderGameOver();
+    case gameState.GameOver:
+      renderGameOver();
       break;
     default:
       break;

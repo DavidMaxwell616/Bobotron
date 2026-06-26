@@ -42,13 +42,7 @@ let levelOverTimer = 0;
 let playerXSpeed = 0;
 let playerYSpeed = 0;
 
-var rectStep = 5;
-var rects;
-var rectColor = 0xffffff;
-var rectWidth = 10;
-var rectCount = 0;
-var rectHeight = 5;
-var rectDelay = 500;
+
 var colorNum;
 var _isRefreshingLevel = false;
 
@@ -114,34 +108,34 @@ var isGameOver = false;
 var Logos;
 var Rewards;
 var ExtraLives;
-var arrowTouched=false;
+var arrowTouched = false;
 var playerDying = false;
-var arrows =new Array(4);
+var arrows = new Array(4);
 var arrowStats = [
-{
-  angle: 0,
-yOffset: 0,
-xOffset: 30,
-direction:'right',
-},
-{
-  angle: 90,
-yOffset: 30,
-xOffset: 0,
-direction:'down',
-}  ,
-{
-  angle: 180,
-yOffset: 0,
-xOffset: -30,
-direction:'left',
-}  ,
-{
-  angle: 270,
-yOffset: -30,
-xOffset: 0,
-direction:'up',
-}  
+  {
+    angle: 0,
+    yOffset: 0,
+    xOffset: 30,
+    direction: 'right',
+  },
+  {
+    angle: 90,
+    yOffset: 30,
+    xOffset: 0,
+    direction: 'down',
+  },
+  {
+    angle: 180,
+    yOffset: 0,
+    xOffset: -30,
+    direction: 'left',
+  },
+  {
+    angle: 270,
+    yOffset: -30,
+    xOffset: 0,
+    direction: 'up',
+  }
 ];
 
 var electrodes = {

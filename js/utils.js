@@ -12,22 +12,22 @@ function clearCanvas(ctx) {
   /*ctx.save();
   for (var i = 0; i < consts.colors.length; i++) {
       ctx.fillStyle = consts.colors[i];
-      ctx.fillRect(i*(g_canvas.width / consts.colors.length), 550, 
+      ctx.fillRect(i*(g_canvas.width / consts.colors.length), 550,
                   (i+1)*(g_canvas.width / consts.colors.length), 50
       );
   }
   ctx.restore();*/
 };
 
-function randTrinary() {
+export function randTrinary() {
   return Math.floor(Math.random() * 3) - 1;
 }
 
-function distSq(x1, y1, x2, y2) {
+export function distSq(x1, y1, x2, y2) {
   return square(x2 - x1) + square(y2 - y1);
 };
 
-function square(x) {
+export function square(x) {
   return x * x;
 };
 
@@ -50,30 +50,12 @@ function fillBox(ctx, x, y, w, h, style) {
   ctx.fillStyle = oldStyle;
 };
 
-function RGB2Color(r, g, b) {
-  return '0x' + this.byte2Hex(r) + this.byte2Hex(g) + this.byte2Hex(b);
-};
-
-function byte2Hex(n) {
-  return String("0123456789ABCDEF".substr((n >> 4) & 0x0F, 1)) + "0123456789ABCDEF".substr(n & 0x0F, 1);
-};
-
-//Called when initializing the game
-function makeColorArray() {
-  for (var i = 0; i < 32; ++i) {
-    var r = Math.sin(0.2 * i + 0) * 127 + 128;
-    var g = Math.sin(0.2 * i + 2) * 127 + 128;
-    var b = Math.sin(0.2 * i + 4) * 127 + 128;
-    colors.push(this.RGB2Color(r, g, b));
-  }
-};
-
 
 
 // LEVEL GENERATOR
 // ===============
 
-function generateLevel(L) {
+export function generateLevel(L) {
 
   var randomlevel = [];
 

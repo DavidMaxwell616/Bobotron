@@ -1,16 +1,16 @@
+import { GAME_STATE, wall } from "./config.js";
 var _scene;
 
-function moveEntities(scene) {
+export function moveEntities(scene) {
   _scene = scene;
-  moveProtagonist();
   moveFamily()
   moveEnemies();
   moveBullets();
   moveParticles();
 }
 
-function moveEnemies() {
-  var members = Enemies.getChildren();
+export function moveEnemies() {
+  var members = _scene.Enemies.getChildren();
   members.forEach(element => {
     switch (element.name) {
       case "Grunt":
@@ -45,11 +45,11 @@ function moveEnemies() {
 
 }
 
-function moveGrunt(grunt) {
+export function moveGrunt(grunt) {
   var du = 1;
   //rage(grunt, du);
-  var xOffset = Protagonist.x - grunt.x;
-  var yOffset = Protagonist.y - grunt.y;
+  var xOffset = _scene.player.x - grunt.x;
+  var yOffset = _scene.player.y - grunt.y;
 
   var velX = 0;
   if (xOffset > 0) {
@@ -77,7 +77,7 @@ function moveGrunt(grunt) {
   grunt.y += velY * du;
 }
 
-function moveMissiles(missile) {
+export function moveMissiles(missile) {
   var du = 1;
   missile.lifeSpan--;
   if (missile.lifeSpan == 0)
@@ -86,7 +86,7 @@ function moveMissiles(missile) {
   missile.y += missile.velY * du;
 }
 
-function moveBrains(brain) {
+export function moveBrains(brain) {
   var du = 1;
   var target = findTarget(brain);
   var xOffset = target.x - brain.x;
@@ -116,29 +116,29 @@ function moveBrains(brain) {
   }
 }
 
-function rage(enemy, du) {
+export function rage(enemy, du) {
   var timeFraction = du / enemy.maxRageReachedTime;
   enemy.speed += (enemy.maxSpeed - enemy.baseSpeed) * timeFraction;
   enemy.speed = Math.min(enemy.speed, enemy.maxSpeed);
 };
 
-function movePlayer(dir) {
+export function movePlayer(dir) {
   switch (dir) {
     case 'left':
-      Protagonist.velX = Protagonist.velX <= 0 ? -Protagonist.speed : 0;
-      Protagonist.anims.play('ProtagonistWalkLeft');
+      _scene.player.velX = _scene.player.velX <= 0 ? -_scene.player.speed : 0;
+      _scene.player.anims.play('playerWalkLeft');
       break;
     case 'right':
-      Protagonist.velX = Protagonist.velX >= 0 ? Protagonist.speed : 0;
-      Protagonist.anims.play('ProtagonistWalkRight');
+      _scene.player.velX = _scene.player.velX >= 0 ? _scene.player.speed : 0;
+      _scene.player.anims.play('playerWalkRight');
       break;
     case 'up':
-      Protagonist.velY = Protagonist.velY <= 0 ? -Protagonist.speed : 0;
-      Protagonist.anims.play('ProtagonistWalkUp');
+      _scene.player.velY = _scene.player.velY <= 0 ? -_scene.player.speed : 0;
+      _scene.player.anims.play('playerWalkUp');
       break;
     case 'down':
-      Protagonist.velY = Protagonist.velY >= 0 ? Protagonist.speed : 0;
-      Protagonist.anims.play('ProtagonistWalkDown');
+      _scene.player.velY = _scene.player.velY >= 0 ? _scene.player.speed : 0;
+      _scene.player.anims.play('playerWalkDown');
       break;
 
     default:
@@ -146,8 +146,8 @@ function movePlayer(dir) {
   }
 }
 
-function moveFamily() {
-  var members = Family.getChildren();
+export function moveFamily() {
+  var members = _scene.Family.getChildren();
 
   members.forEach(person => {
     if (Math.random() < 0.02 * person.panic) {
@@ -178,15 +178,15 @@ function moveFamily() {
   });
 }
 
-function findTarget(entity) {
+export function findTarget(entity) {
   var target = findClosestFamilyMember(entity.x, entity.y);
   if (target === null || target === undefined) {
-    target = Protagonist;
+    target = _scene.player;
   }
   return target;
 };
 
-function moveHulk(hulk) {
+export function moveHulk(hulk) {
   var du = 1;
   var target = findTarget(hulk);
   var xOffset = target.x - hulk.x;
@@ -220,7 +220,7 @@ function moveHulk(hulk) {
   hulk.y += hulk.velY * du;
 }
 
-function findClosestFamilyMember(posX, posY) {
+export function findClosestFamilyMember(posX, posY) {
   var closest = null;
   var minDistSq = Infinity;
   var members = Family.getChildren();
@@ -235,19 +235,19 @@ function findClosestFamilyMember(posX, posY) {
   return closest;
 };
 
-function moveProtagonist() {
-  isMoving = (Protagonist.velX != 0 || Protagonist.velY != 0)
-  if (!isMoving && Protagonist.anims != undefined && Protagonist.anims.currentAnim != null) {
-    Protagonist.anims.pause(Protagonist.anims.currentAnim.frames[0]);
-  } else {
-    Protagonist.x += Protagonist.velX;
-    Protagonist.y += Protagonist.velY;
-  }
-  edgeBounce(Protagonist);
-}
+// export function movePlayer() {
+//   isMoving = (_scene.player.velX != 0 || _scene.player.velY != 0)
+//   if (!isMoving && _scene.player.anims != undefined && _scene.player.anims.currentAnim != null) {
+//     _scene.player.anims.pause(_scene.player.anims.currentAnim.frames[0]);
+//   } else {
+//     _scene.player.x += _scene.player.velX;
+//     player.y += player.velY;
+//   }
+//   edgeBounce(player);
+// }
 
-function moveBullets() {
-  var bullets = Bullets.getChildren();
+export function moveBullets() {
+  var bullets = _scene.Bullets.getChildren();
   bullets.forEach(bullet => {
     // Handle death
     bullet.lifeSpan -= 1;
@@ -256,8 +256,8 @@ function moveBullets() {
       bullet.destroy();
     }
     if (bullet.name == 'missile') {
-      var xOffset = Protagonist.x - bullet.x;
-      var yOffset = Protagonist.y - bullet.y;
+      var xOffset = _scene.player.x - bullet.x;
+      var yOffset = _scene.player.y - bullet.y;
       bullet.velX += xOffset / 10;
       bullet.velY += yOffset / 10;
     }
@@ -310,7 +310,7 @@ function moveBullets() {
 
 };
 
-function enemyHitFamily(enemy, member) {
+export function enemyHitFamily(enemy, member) {
   if (enemy.name == 'Brain') {
     createProg(member.x, member.y);
     member.destroy();
@@ -328,34 +328,28 @@ function enemyHitFamily(enemy, member) {
   }
 }
 
-function protagonistHitEnemy(player, enemy) {
- if(!playerDying){
- playerDying = true;
- var skull = _scene.add.sprite(player.x, player.y, 'spriteMap', 'Skull.png');
- lives--;
- player.visible = false;
-  if (enemy.name == 'Missile') {
-    makeExplosion(enemy);
-    enemy.destroy();
-  }
-  var timedEvent = _scene.time.delayedCall(3000, function () {
-    skull.destroy();
-     clearLevel();
-    if (lives == 0){
-      _gameState = gameState.GameOver;
-      playerDying=false;
+export function playerHitEnemy(player, enemy) {
+  if (!_scene.playerDying) {
+    _scene.playerDying = true;
+    var skull = _scene.add.sprite(_scene.player.x, _scene.player.y, 'spriteMap', 'Skull.png');
+    _scene.lives--;
+    _scene.player.visible = false;
+    if (enemy.name == 'Missile') {
+      makeExplosion(enemy);
+      enemy.destroy();
     }
-    else{
-      _isRefreshingLevel = true;
-      nextRect = _scene.time.now + 1000;
-      _gameState = gameState.Transition;
-      playerDying=false;
-        }
-  }, [], _scene);
-}
+    var timedEvent = _scene.time.delayedCall(3000, function () {
+      skull.destroy();
+      if (_scene.lives == 0) {
+        _scene.clearLevel();
+        _scene.gameState = GAME_STATE.GameOver;
+        _scene.playerDying = false;
+      }
+    }, [], _scene);
+  }
 }
 
-function bulletHitEnemy(bullet, enemy) {
+export function bulletHitEnemy(bullet, enemy) {
   var canTakeHit = enemy.takeBulletHit;
   if (!canTakeHit) {
     score += enemy.value;
@@ -369,7 +363,7 @@ function bulletHitEnemy(bullet, enemy) {
   }
 }
 
-function moveProgs(enemy) {
+export function moveProgs(enemy) {
   var du = 1;
   if (Math.random() < 0.02) {
     //2% chance to change direction
@@ -398,7 +392,7 @@ function moveProgs(enemy) {
 
 }
 
-function makeExplosion(enemy) {
+export function makeExplosion(enemy) {
   var numberOfParticles = getNumberOfParticles();
   for (var j = 0; j < numberOfParticles; j++) {
     var colorDefinition = colors[Phaser.Math.Between(0, colors.length)];
@@ -414,12 +408,12 @@ function makeExplosion(enemy) {
   }
 };
 
-function getNumberOfParticles() {
+export function getNumberOfParticles() {
   var maxNumParticlesOnScreen = 4000;
   var maxNumParticles = 200;
   var minNumParticles = 20;
 
-  var numEntities = Enemies.children.size;
+  var numEntities = _scene.Enemies.children.size;
   var numParticles = maxNumParticlesOnScreen / numEntities;
   // Capping
   var numParticles = Math.max(numParticles, minNumParticles);
@@ -434,20 +428,20 @@ function edgeBounce(entity) {
   var x = entity.x;
   var y = entity.y;
   var r = entity.width / 2;
-  if (x + velX > wallRight - r || x + velX < wallLeft + r) {
+  if (x + velX > wall.wallRight - r || x + velX < wall.wallLeft + r) {
     bounceHappened = true;
     entity.velX = -entity.velX;
   }
-  if (y + velY > wallBottom - r || y + velY < wallTop + wallThickness + r) {
+  if (y + velY > wall.wallBottom - r || y + velY < wall.wallTop + wall.wallThickness + r) {
     bounceHappened = true;
     entity.velY = -entity.velY;
   }
   return bounceHappened;
 };
 
-function moveParticles() {
+export function moveParticles() {
   var du = 1;
-  var particles = Particles.getChildren();
+  var particles = _scene.Particles.getChildren();
   particles.forEach(particle => {
     particle.lifeSpan -= 1;
     var alpha = 1;
@@ -458,9 +452,7 @@ function moveParticles() {
       particle.height = particle.height * particle.lifeSpan / fadeThresh;
     }
 
-    //  console.log(particle.lifeSpan);
     if (particle.lifeSpan < 0) particle.destroy();
-    //console.log(particle.dirn);
     if (particle.dirn) {
       particle.velX = Math.cos(particle.dirn) * particle.speed;
       particle.velY = Math.sin(particle.dirn) * particle.speed;
@@ -471,7 +463,7 @@ function moveParticles() {
   });
 };
 
-function moveSpheroids(spheroid) {
+export function moveSpheroids(spheroid) {
   var du = 1;
   if (spheroid.isSpawning) {
     warpIn(1);
@@ -507,11 +499,51 @@ function moveSpheroids(spheroid) {
     }
   }
 };
+export function processUserInput() {
+  //move player
+  if (_scene.cursors.left.isDown) movePlayer('left');
+  if (_scene.cursors.right.isDown) movePlayer('right');
+  if (_scene.cursors.up.isDown) movePlayer('up');
+  if (_scene.cursors.down.isDown) movePlayer('down');
 
-function moveEnforcers(enforcer) {
+  if (!_scene.arrowTouched) {
+    //player shoots
+    _scene.input.keyboard.on('keydown_Q', function (event) {
+      fireBullet(player.x, player.y, -_bulletVel, -_bulletVel)
+    });
+
+    _scene.input.keyboard.on('keydown_W', function (event) {
+      fireBullet(player.x, player.y, 0, -_bulletVel)
+    });
+
+    _scene.input.keyboard.on('keydown_E', function (event) {
+      fireBullet(player.x, player.y, _bulletVel, -_bulletVel)
+    });
+
+    _scene.input.keyboard.on('keydown_A', function (event) {
+      fireBullet(player.x, player.y, -_bulletVel, 0)
+    });
+    _scene.input.keyboard.on('keydown_D', function (event) {
+      fireBullet(player.x, player.y, _bulletVel, 0)
+    });
+
+    _scene.input.keyboard.on('keydown_Z', function (event) {
+      fireBullet(player.x, player.y, -_bulletVel, _bulletVel)
+    });
+
+    _scene.input.keyboard.on('keydown_X', function (event) {
+      fireBullet(player.x, player.y, 0, _bulletVel)
+    });
+
+    _scene.input.keyboard.on('keydown_C', function (event) {
+      fireBullet(player.x, player.y, _bulletVel, _bulletVel)
+    });
+  }
+}
+export function moveEnforcers(enforcer) {
   var du = 1;
   seekTarget();
-  enforcer.target = Protagonist;
+  enforcer.target = _scene.player;
   enforcer.x += enforcer.velX * du;
   enforcer.y += enforcer.velY * du;
 
@@ -528,7 +560,7 @@ function moveEnforcers(enforcer) {
 
 };
 
-function moveQuarks(quark) {
+export function moveQuarks(quark) {
   var du = 1;
   // maxTanks is effectively zero-indexed
   if (Math.random() < quark.tankSpawnChance &&

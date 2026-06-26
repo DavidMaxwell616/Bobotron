@@ -3000,7 +3000,7 @@
         }
       },
       {
-        "filename": "Protagonist_07.png",
+        "filename": "player_07.png",
         "rotated": false,
         "trimmed": false,
         "sourceSize": {
@@ -3042,7 +3042,7 @@
         }
       },
       {
-        "filename": "Protagonist_08.png",
+        "filename": "player_08.png",
         "rotated": false,
         "trimmed": false,
         "sourceSize": {
@@ -3063,7 +3063,7 @@
         }
       },
       {
-        "filename": "Protagonist_09.png",
+        "filename": "player_09.png",
         "rotated": false,
         "trimmed": false,
         "sourceSize": {
@@ -3084,7 +3084,7 @@
         }
       },
       {
-        "filename": "Protagonist_11.png",
+        "filename": "player_11.png",
         "rotated": false,
         "trimmed": false,
         "sourceSize": {
@@ -3105,7 +3105,7 @@
         }
       },
       {
-        "filename": "Protagonist_10.png",
+        "filename": "player_10.png",
         "rotated": false,
         "trimmed": false,
         "sourceSize": {
@@ -3126,7 +3126,7 @@
         }
       },
       {
-        "filename": "Protagonist_12.png",
+        "filename": "player_12.png",
         "rotated": false,
         "trimmed": false,
         "sourceSize": {
@@ -3168,7 +3168,7 @@
         }
       },
       {
-        "filename": "Protagonist_01.png",
+        "filename": "player_01.png",
         "rotated": false,
         "trimmed": false,
         "sourceSize": {
@@ -3189,7 +3189,7 @@
         }
       },
       {
-        "filename": "Protagonist_02.png",
+        "filename": "player_02.png",
         "rotated": false,
         "trimmed": false,
         "sourceSize": {
@@ -3231,7 +3231,7 @@
         }
       },
       {
-        "filename": "Protagonist_03.png",
+        "filename": "player_03.png",
         "rotated": false,
         "trimmed": false,
         "sourceSize": {
@@ -3273,7 +3273,7 @@
         }
       },
       {
-        "filename": "Protagonist_04.png",
+        "filename": "player_04.png",
         "rotated": false,
         "trimmed": false,
         "sourceSize": {
@@ -3315,7 +3315,7 @@
         }
       },
       {
-        "filename": "Protagonist_05.png",
+        "filename": "player_05.png",
         "rotated": false,
         "trimmed": false,
         "sourceSize": {
@@ -3336,7 +3336,7 @@
         }
       },
       {
-        "filename": "Protagonist_06.png",
+        "filename": "player_06.png",
         "rotated": false,
         "trimmed": false,
         "sourceSize": {

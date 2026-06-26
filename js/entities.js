@@ -1,53 +1,8 @@
+import { wall, SECS_TO_NOMINALS, scoreValues, levelSpecs } from "./config.js";
+import { distSq, square } from "./utils.js";
 var _scene;
 
-function initEntities(levelData) {
-  // Key:
-  initProtagonist();
-  initFamily(levelData[0]);
-  initElectrodes(levelData[1]);
-  initGrunts(levelData[2]);
-  initHulks(levelData[3]);
-  initSpheroids(levelData[4]);
-  initBrains(levelData[5]);
-  initQuarks(levelData[6]);
-  //drawSprite();
-}
-
-function startLevel(scene) {
-  // Create a fresh level
-  _scene = scene;
-  maxxdaddy.visible = false;
-
-  var randomLevelRequired = level >= _levelSpecs.length;
-  var L = level;
-
-  for (let index = 0; index < arrows.length; index++) {
-  arrows[index].visible = true;
-}
-
-  if (randomLevelRequired) {
-    var randomlevel = generateLevel(L);
-    initEntities(randomlevel);
-
-    numberOfEntities = randomlevel.reduce(function (a, b) {
-      return a + b;
-    }, 0);
-  } else {
-    initEntities(_levelSpecs[level]);
-    numberOfEntities = _levelSpecs[level].reduce(function (a, b) {
-      return a + b;
-    }, 0);
-  }
-}
-
-function drawSprite() {
-  for (let index = 1; index < 10; index++) {
-    var dad = _scene.add.sprite(index * 20 + 50, gameHeight / 2 + 50, 'spriteMap', 'Prog_0' + index + '.png');
-
-  }
-}
-
-function findClosestFamilyMember(posX, posY) {
+export function findClosestFamilyMember(posX, posY) {
   var closest = null;
   var minDistSq = Infinity;
   for (var i = 0; i < _family.length; i++) {
@@ -61,75 +16,31 @@ function findClosestFamilyMember(posX, posY) {
   return closest;
 }
 
-function initProtagonist() {
+export function initPlayer(scene) {
   var _bulletVel = 10;
-  Protagonist.visible = true;
-  Protagonist.speed = 1;
-  Protagonist.name = 'Protagonist';
-  initPeopleAnimations(Protagonist);
-  Protagonist.velX = 0;
-  Protagonist.velY = 0;
+  _scene = scene;
+  scene.player.visible = true;
+  scene.player.speed = 1;
+  scene.player.name = 'player';
+  initPeopleAnimations(_scene.player);
+  scene.player.velX = 0;
+  scene.player.velY = 0;
   var isMoving = false;
-  //move Protagonist
-  _scene.input.keyboard.on('keydown_LEFT', function (event) {
-    movePlayer('left');
-  });
-
-  _scene.input.keyboard.on('keydown_RIGHT', function (event) {
-    movePlayer('right');
-  });
-
-  _scene.input.keyboard.on('keydown_UP', function (event) {
-    movePlayer('up');
-  });
-
-  _scene.input.keyboard.on('keydown_DOWN', function (event) {
-    movePlayer('down');
-  });
-  if(!arrowTouched){
-  //Protagonist shoots
-  _scene.input.keyboard.on('keydown_Q', function (event) {
-    fireBullet(Protagonist.x, Protagonist.y, -_bulletVel, -_bulletVel)
-  });
-
-  _scene.input.keyboard.on('keydown_W', function (event) {
-    fireBullet(Protagonist.x, Protagonist.y, 0, -_bulletVel)
-  });
-
-  _scene.input.keyboard.on('keydown_E', function (event) {
-    fireBullet(Protagonist.x, Protagonist.y, _bulletVel, -_bulletVel)
-  });
-
-  _scene.input.keyboard.on('keydown_A', function (event) {
-    fireBullet(Protagonist.x, Protagonist.y, -_bulletVel, 0)
-  });
-  _scene.input.keyboard.on('keydown_D', function (event) {
-    fireBullet(Protagonist.x, Protagonist.y, _bulletVel, 0)
-  });
-
-  _scene.input.keyboard.on('keydown_Z', function (event) {
-    fireBullet(Protagonist.x, Protagonist.y, -_bulletVel, _bulletVel)
-  });
-
-  _scene.input.keyboard.on('keydown_X', function (event) {
-    fireBullet(Protagonist.x, Protagonist.y, 0, _bulletVel)
-  });
-
-  _scene.input.keyboard.on('keydown_C', function (event) {
-    fireBullet(Protagonist.x, Protagonist.y, _bulletVel, _bulletVel)
-  });
-  }
 }
 
 function initPeopleAnimations(entity) {
+  console.log(entity);
   setupAnimation(entity, 1, 3, 'WalkLeft');
   setupAnimation(entity, 4, 6, 'WalkRight');
   setupAnimation(entity, 7, 9, 'WalkDown');
   setupAnimation(entity, 10, 12, 'WalkUp');
 }
 
-function setupAnimation(entity, start, end, movement) {
-  var frameNames = _scene.anims.generateFrameNames('spriteMap', {
+export function setupAnimation(entity, start, end, movement) {
+  const key = entity.name + movement;
+  if (_scene.anims.exists(key)) {
+    return;
+  } var frameNames = _scene.anims.generateFrameNames('spriteMap', {
     start: start,
     end: end,
     zeroPad: 2,
@@ -144,7 +55,7 @@ function setupAnimation(entity, start, end, movement) {
   });
 }
 
-function initFamily(number) {
+export function initFamily(number) {
   var playerSafeDist = 120;
   var descr = findSpawn(playerSafeDist);
   var dad = _scene.add.sprite(0, 0, 'spriteMap', 'Dad_01.png');
@@ -153,7 +64,7 @@ function initFamily(number) {
   setFamilyProperties(dad);
   dad.name = 'Dad';
   initPeopleAnimations(dad);
-  Family.add(dad);
+  _scene.Family.add(dad);
   if (number < 2)
     return;
   var mom = _scene.add.sprite(0, 0, 'spriteMap', 'Mom_01.png');
@@ -162,7 +73,7 @@ function initFamily(number) {
   setFamilyProperties(mom);
   mom.name = 'Mom';
   initPeopleAnimations(mom);
-  Family.add(mom);
+  _scene.Family.add(mom);
   if (number < 3)
     return;
   for (let index = 0; index < number - 3; index++) {
@@ -177,7 +88,7 @@ function initFamily(number) {
 
 }
 
-function setFamilyProperties(member) {
+export function setFamilyProperties(member) {
   member.rotation = 0;
   member.velX = 1;
   member.velY = 0;
@@ -190,15 +101,14 @@ function setFamilyProperties(member) {
   member.speed = 1;
 }
 
-function findSpawn(playerSafeDist) {
+export function findSpawn(playerSafeDist) {
   // A function to prevent the Enemies from 
-  // spawning too close to the protagonist
+  // spawning too close to the player
   for (var i = 0; i < 100; i++) {
-    var x = Phaser.Math.Between(wallLeft, wallRight);
-    var y = Phaser.Math.Between(wallTop, wallBottom);
-
+    var x = Phaser.Math.Between(wall.wallLeft, wall.wallRight);
+    var y = Phaser.Math.Between(wall.wallTop, wall.wallBottom);
     var locationFound = true;
-    var pPos = Protagonist.getCenter();
+    var pPos = _scene.player.getCenter();
     var dstSq = distSq(x, y, pPos.x, pPos.y);
     if (dstSq < square(playerSafeDist))
       locationFound = false;
@@ -212,9 +122,7 @@ function findSpawn(playerSafeDist) {
   }
 };
 
-
-
-function initGrunts(number) {
+export function initGrunts(number) {
   for (let index = 0; index < number; index++) {
     var playerSafeDist = 120;
     var descr = findSpawn(playerSafeDist);
@@ -225,14 +133,14 @@ function initGrunts(number) {
     grunt.maxSpeed = 3;
     grunt.maxRageReachedTime = 40 * SECS_TO_NOMINALS;
     grunt.name = 'Grunt';
-    grunt.value = scoreValues.Grunt * multiplier;
+    grunt.value = scoreValues.Grunt * _scene.multiplier;
     grunt.takeBulletHit = false;
     setupAnimation(grunt, 1, 3, 'Walk');
-    Enemies.add(grunt);
+    _scene.Enemies.add(grunt);
   }
 };
 
-function initHulks(number) {
+export function initHulks(number) {
   for (let index = 0; index < number; index++) {
     var playerSafeDist = 120;
     var descr = findSpawn(playerSafeDist);
@@ -250,11 +158,11 @@ function initHulks(number) {
     setupAnimation(hulk, 1, 3, 'WalkLeft');
     setupAnimation(hulk, 4, 6, 'WalkUpDown');
     setupAnimation(hulk, 7, 9, 'WalkRight');
-    Enemies.add(hulk);
+    _scene.Enemies.add(hulk);
   }
 };
 
-function initQuarks(number) {
+export function initQuarks(number) {
   for (let index = 0; index < number; index++) {
     var playerSafeDist = 120;
     var descr = findSpawn(playerSafeDist);
@@ -271,11 +179,11 @@ function initQuarks(number) {
     setupAnimation(quark, 1, 3, 'WalkLeft');
     setupAnimation(quark, 4, 6, 'WalkUpDown');
     setupAnimation(quark, 7, 9, 'WalkRight');
-    Enemies.add(quark);
+    _scene.Enemies.add(quark);
   }
 };
 
-function createProg(x, y) {
+export function createProg(x, y) {
   var prog = _scene.add.sprite(x, y, 'spriteMap', 'Prog_01.png');
   prog.speed = 1.5;
   prog.name = 'Prog';
@@ -284,10 +192,10 @@ function createProg(x, y) {
   setupAnimation(prog, 1, 3, 'WalkLeft');
   setupAnimation(prog, 4, 6, 'WalkUpDown');
   setupAnimation(prog, 7, 9, 'WalkRight');
-  Enemies.add(prog);
+  _scene.Enemies.add(prog);
 };
 
-function initBrains(number) {
+export function initBrains(number) {
   for (let index = 0; index < number; index++) {
     var playerSafeDist = 120;
     var descr = findSpawn(playerSafeDist);
@@ -308,11 +216,11 @@ function initBrains(number) {
     setupAnimation(brain, 1, 3, 'WalkLeft');
     setupAnimation(brain, 4, 6, 'WalkUpDown');
     setupAnimation(brain, 7, 9, 'WalkRight');
-    Enemies.add(brain);
+    _scene.Enemies.add(brain);
   }
 };
 
-function initElectrodes(number) {
+export function initElectrodes(number) {
   for (let index = 0; index < number; index++) {
     var playerSafeDist = 120;
     var descr = findSpawn(playerSafeDist);
@@ -322,23 +230,23 @@ function initElectrodes(number) {
     electrode.name = elec;
     setupAnimation(electrode, 1, 3, 'Blink');
     electrode.anims.play(elec + 'Blink');
-    Rewards.add(electrode);
+    _scene.Rewards.add(electrode);
   }
 };
 
 
 
-function initTank(x, y) {
+export function initTank(x, y) {
   var tank = _scene.add.sprite(x, y, 'spriteMap', 'Tank_01.png');
   tank.shellFireChance = 0.01; //1% chance of firing a shell/update
   tank.ammo = 20;
   tank.value = scoreValues.Tank * multiplier;
   tank.dropChance = 1; // 100% chance of a random drop
   tank.stepsize = 3;
-  Enemies.add(tank);
+  _scene.Enemies.add(tank);
 };
 
-function initSpheroids(number) {
+export function initSpheroids(number) {
   for (let index = 0; index < number; index++) {
     var playerSafeDist = 120;
     var descr = findSpawn(playerSafeDist);
@@ -357,11 +265,11 @@ function initSpheroids(number) {
     spheroid.name = 'Spheroid';
     setupAnimation(spheroid, 1, 9, 'Blink');
     spheroid.anims.play('SpheroidBlink');
-    Enemies.add(spheroid);
+    _scene.Enemies.add(spheroid);
   }
 };
 
-function createEnforcer(x, y) {
+export function createEnforcer(x, y) {
   var enforcer = _scene.add.sprite(x, y, 'spriteMap', 'Enforcer_01.png');
   enforcer.ammo = 20;
   enforcer.sparkFireChance = 0.01; //1% chance of firing a spark/update
@@ -370,10 +278,10 @@ function createEnforcer(x, y) {
   enforcer.value = scoreValues.Enforcer * multiplier;
   setupAnimation(enforcer, 1, 3, 'Left');
   setupAnimation(enforcer, 4, 6, 'Right');
-  Enemies.add(enforcer);
+  _scene.Enemies.add(enforcer);
 };
 
-function fireCruiseMissile(x, y) {
+export function fireCruiseMissile(x, y) {
   var graphics = _scene.add.graphics();
   var circle = new Phaser.Geom.Circle(4, 4, 2);
   graphics.fillStyle(0xff0000, 1);
@@ -384,27 +292,27 @@ function fireCruiseMissile(x, y) {
   var texture = graphics.generateTexture('missile', 8, 8);
   newSprite = _scene.add.sprite(x, y, 'missile');
   newSprite.lifeSpan = 200;
-  newSprite.velX = Math.cos(newSprite.x - Protagonist.x) * 3;
-  newSprite.velY = Math.sin(newSprite.y - Protagonist.y) * 3;
+  newSprite.velX = Math.cos(newSprite.x - player.x) * 3;
+  newSprite.velY = Math.sin(newSprite.y - player.y) * 3;
   newSprite.setOrigin(.5);
   newSprite.name = 'Missile';
   graphics.destroy();
-  Enemies.add(newSprite);
+  _scene.Enemies.add(newSprite);
 };
 
-function fireShell(x, y, angle) {
+export function fireShell(x, y, angle) {
   var shell = _scene.add.sprite(x, y, 'spriteMap', 'Shell_01.png');
   shell.angle = angle;
-  Bullets.add(shell);
+  _scene.Bullets.add(shell);
 };
 
-function fireSpark(x, y, angle) {
+export function fireSpark(x, y, angle) {
   var spark = _scene.add.sprite(x, y, 'spriteMap', 'Spark_01.png');
   spark.angle = angle;
-  Bullets.add(spark);
+  _scene.Bullets.add(spark);
 };
 
-function fireBullet(x, y, dirnX, dirnY) {
+export function fireBullet(x, y, dirnX, dirnY) {
   if (ammo == 0)
     return;
   ammo--
@@ -417,12 +325,12 @@ function fireBullet(x, y, dirnX, dirnY) {
   ammo--;
 };
 
-function Projectile(descr) {
+export function Projectile(descr) {
   if (descr.velX == 0 && descr.velY == 0)
     descr.velX = 0;
   var newSprite;
   switch (true) {
-    case Protagonist.hasShotgun:
+    case player.hasShotgun:
       var graphics = _scene.add.graphics();
       var circle = new Phaser.Geom.Circle(descr.x, descr.y, 6);
       graphics.fillStyle(0xffffff, .3);
@@ -442,7 +350,7 @@ function Projectile(descr) {
       newSprite.velY = descr.velY;
       graphics.destroy();
       break;
-    case Protagonist.hasMachineGun:
+    case player.hasMachineGun:
       var graphics = _scene.add.graphics();
       var circle = new Phaser.Geom.Circle(descr.x, descr.y, 6);
       graphics.fillStyle(0xffffff, .3);
@@ -461,39 +369,39 @@ function Projectile(descr) {
       newSprite.velX = descr.velX;
       newSprite.velY = descr.velY;
       graphics.destroy();
-      //case Protagonist.hasMachineGun:
-      // ctx.strokeStyle = 0x008b8b; //yan
-      // ctx.fillStyle = 0x008b8;
-      //var dirn = util.angleTo(x, y, prevX, prevY);
-      //var x = x + 10 * Math.cos(dirn);
-      //var y = y + 10 * Math.sin(dirn);
-      // ctx.globalAlpha = 0.4;
-      // ctx.beginPath();
-      // ctx.moveTo(x, y);
-      // ctx.lineTo(x, y);
-      // ctx.lineWidth = 8;
-      // ctx.stroke();
-      // util.fillCircle(ctx, x, y, 4);
+    //case player.hasMachineGun:
+    // ctx.strokeStyle = 0x008b8b; //yan
+    // ctx.fillStyle = 0x008b8;
+    //var dirn = util.angleTo(x, y, prevX, prevY);
+    //var x = x + 10 * Math.cos(dirn);
+    //var y = y + 10 * Math.sin(dirn);
+    // ctx.globalAlpha = 0.4;
+    // ctx.beginPath();
+    // ctx.moveTo(x, y);
+    // ctx.lineTo(x, y);
+    // ctx.lineWidth = 8;
+    // ctx.stroke();
+    // util.fillCircle(ctx, x, y, 4);
 
-      // ctx.globalAlpha = 0.6;
-      // ctx.beginPath();
-      // ctx.moveTo(x, y);
-      // ctx.lineTo(x, y);
-      // ctx.lineWidth = 4;
-      // ctx.stroke();
-      // util.fillCircle(ctx, x, y, 2);
+    // ctx.globalAlpha = 0.6;
+    // ctx.beginPath();
+    // ctx.moveTo(x, y);
+    // ctx.lineTo(x, y);
+    // ctx.lineWidth = 4;
+    // ctx.stroke();
+    // util.fillCircle(ctx, x, y, 2);
 
-      // ctx.strokeStyle = "white";
-      // ctx.fillStyle = "white";
-      // ctx.globalAlpha = 1;
-      // ctx.beginPath();
-      // ctx.moveTo(x, y);
-      // ctx.lineTo(x, y);
-      // ctx.lineWidth = 2;
-      // ctx.stroke();
+    // ctx.strokeStyle = "white";
+    // ctx.fillStyle = "white";
+    // ctx.globalAlpha = 1;
+    // ctx.beginPath();
+    // ctx.moveTo(x, y);
+    // ctx.lineTo(x, y);
+    // ctx.lineWidth = 2;
+    // ctx.stroke();
 
-      // ctx.restore();
-      //  break;
+    // ctx.restore();
+    //  break;
     default:
       var graphics = _scene.add.graphics();
       var circle = new Phaser.Geom.Circle(3, 3, 6);
@@ -517,7 +425,7 @@ function Projectile(descr) {
   return newSprite;
 };
 
-function makeWarpParticles() {
+export function makeWarpParticles() {
 
   for (var i = 0; i < colors.length; i++) {
     var colorDefinition = colors[i];
@@ -540,14 +448,14 @@ function makeWarpParticles() {
   }
 };
 
-function warpIn(du) {
+export function warpIn(du) {
   spawnTimeElapsed += du;
   if (spawnTimeElapsed > spawnTime) {
     isSpawning = false;
   }
 };
 
-function spawnFragment(num, specificColor) {
+export function spawnFragment(num, specificColor) {
 
   var explosionColors = ["0xffff00", "0xffa500", "0xff0000", "0x080808", "0xffffff"];
 
@@ -577,11 +485,11 @@ function spawnFragment(num, specificColor) {
 //   Particles.add(new CMTrail({x: x, y: y}));
 // };
 
-function createParticle(descr) {
+export function createParticle(descr) {
   Particles.add(new Particle(descr));
 };
 
-function Particle(descr) {
+export function Particle(descr) {
   var newSprite;
   var _graphics = _scene.add.graphics();
   var circle = new Phaser.Geom.Circle(descr.radius / 2, descr.radius / 2, descr.radius);
