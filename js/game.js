@@ -335,7 +335,7 @@ function renderLevel() {
   });
 
   //display the multiplier and the level
-  var disp = 'X' + multiplier + '  Level: ' + level;
+  var disp = 'X' + _scene.multiplier + '  Level: ' + level;
   levelText = _scene.add.text(gameWidth / 2 - 140, 5, disp, {
     fontFamily: 'Arial',
     fontSize: '20px',

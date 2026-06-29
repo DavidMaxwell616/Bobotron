@@ -1,5 +1,5 @@
 import { wall, SECS_TO_NOMINALS, scoreValues, levelSpecs, electrodes } from "./config.js";
-import { distSq, square } from "./utils.js";
+import { distSq, square, randTrinary } from "./utils.js";
 var _scene;
 
 export function findClosestFamilyMember(posX, posY) {
@@ -170,7 +170,7 @@ export function initQuarks(number) {
     quark.velY = quark.baseSpeed * randTrinary();
     quark.tanksSpawned = 0;
     quark.maxTanks = 6;
-    quark.value = scoreValues.Quark * multiplier;
+    quark.value = scoreValues.Quark * _scene.multiplier;
     quark.takeBulletHit = false;
     quark.bootTime = 2 * SECS_TO_NOMINALS;
     quark.name = 'Quark';
@@ -201,7 +201,7 @@ export function initBrains(number) {
     brain.killFamily = true;
     brain.stepsize = 3;
     brain.makesProgs = true;
-    brain.value = scoreValues.Brain * multiplier;
+    brain.value = scoreValues.Brain * _scene.multiplier;
     brain.takeBulletHit = false;
     brain.missileFireChance = 0.005; // 0.5% chance of firing a CM per update
     // TODO: Find a good firing interval for the missiles.
@@ -252,7 +252,7 @@ export function initSpheroids(number) {
     spheroid.baseSpeed = 3;
     spheroid.velX = spheroid.baseSpeed * randTrinary();
     spheroid.velY = spheroid.baseSpeed * randTrinary();
-    spheroid.value = scoreValues.Spheroid * multiplier;
+    spheroid.value = scoreValues.Spheroid * _scene.multiplier;
     spheroid.tanksSpawned = 0;
     makeWarpParticles();
     // TODO play spawning sound?
@@ -426,9 +426,9 @@ export function Projectile(descr) {
 
 export function makeWarpParticles() {
 
-  for (var i = 0; i < colors.length; i++) {
-    var colorDefinition = colors[i];
-    var numberOfParticles = colorDefinition.ratio * Particles.getChildren().Length;
+  for (var i = 0; i < _scene.colors.length; i++) {
+    var colorDefinition = _scene.colors[i];
+    var numberOfParticles = colorDefinition.ratio * _scene.Particles.getChildren().Length;
     for (var j = 0; j < numberOfParticles; j++) {
       var direction = Phaser.Math.Between(0, Math.PI * 2);
       var speed = Phaser.Math.Between(0, 2);

@@ -4,8 +4,9 @@ import {
     initSpheroids, initBrains, initQuarks
 } from "./entities.js";
 import {
-    moveEntities, enemyHitFamily, playerHitEnemy, processUserInput, bulletHitEnemy
+    moveEntities, enemyHitFamily, playerHitEnemy, processUserInput, bulletHitEnemy, playerHitReward
 } from "./move.js";
+import { generateLevel } from "./utils.js";
 
 export class GameScene extends Phaser.Scene {
 
@@ -266,10 +267,10 @@ export class GameScene extends Phaser.Scene {
         }
 
         if (randomLevelRequired) {
-            var randomlevel = generateLevel(L);
-            initEntities(randomlevel);
+            var randomlevel = generateLevel(this.level);
+            this.initEntities(randomlevel);
 
-            numberOfEntities = randomlevel.reduce(function (a, b) {
+            this.numberOfEntities = randomlevel.reduce(function (a, b) {
                 return a + b;
             }, 0);
         } else {
@@ -290,11 +291,6 @@ export class GameScene extends Phaser.Scene {
         initSpheroids(levelData[4]);
         initBrains(levelData[5]);
         initQuarks(levelData[6]);
-    }
-
-    playerHitReward(player, reward) {
-        this.score += scoreValues.Electrode;
-        reward.destroy();
     }
 
     clearLevel() {

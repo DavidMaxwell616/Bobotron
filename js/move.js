@@ -1,4 +1,4 @@
-import { GAME_STATE, wall } from "./config.js";
+import { GAME_STATE, wall, scoreValues } from "./config.js";
 import { createParticle, fireBullet } from "./entities.js";
 import { distSq } from "./utils.js";
 var _scene;
@@ -14,7 +14,10 @@ export function moveEntities(scene) {
     bullet.y += bullet.velY;
   });
 }
-
+export function playerHitReward(player, reward) {
+  _scene.score += scoreValues.Electrode;
+  reward.destroy();
+}
 export function moveEnemies() {
   var members = _scene.Enemies.getChildren();
   members.forEach(element => {
@@ -343,24 +346,42 @@ export function enemyHitFamily(enemy, member) {
 }
 
 export function playerHitEnemy(player, enemy) {
-  if (!_scene.playerDying) {
-    _scene.playerDying = true;
-    var skull = _scene.add.sprite(_scene.player.x, _scene.player.y, 'spriteMap', 'Skull.png');
-    _scene.lives--;
-    _scene.player.visible = false;
-    if (enemy.name == 'Missile') {
-      makeExplosion(enemy);
-      enemy.destroy();
-    }
-    var timedEvent = _scene.time.delayedCall(3000, function () {
-      skull.destroy();
-      if (_scene.lives == 0) {
-        _scene.clearLevel();
-        _scene.gameState = GAME_STATE.GameOver;
-        _scene.playerDying = false;
-      }
-    }, [], _scene);
+  if (_scene.playerDying) return;
+
+  _scene.playerDying = true;
+  _scene.lives--;
+
+  _scene.player.setVisible(false);
+
+  const skull = _scene.add.sprite(
+    _scene.player.x,
+    _scene.player.y,
+    "spriteMap",
+    "Skull.png"
+  );
+
+  if (enemy.name === "Missile") {
+    makeExplosion(enemy);
+    enemy.destroy();
   }
+
+  _scene.time.delayedCall(5000, () => {
+
+    skull.destroy();
+
+    if (_scene.lives <= 0) {
+      _scene.clearLevel();
+      _scene.gameState = GAME_STATE.GameOver;
+    } else {
+      // Reset the current level
+      _scene.scene.restart();
+      // or call your own reset method:
+      // _scene.resetLevel();
+    }
+
+    _scene.playerDying = false;
+
+  });
 }
 
 export function bulletHitEnemy(bullet, enemy) {
@@ -514,40 +535,37 @@ export function moveSpheroids(spheroid) {
   }
 };
 export function processUserInput() {
-  //move player
-  if (_scene.cursors.left.isDown) movePlayer('left');
-  if (_scene.cursors.right.isDown) movePlayer('right');
-  if (_scene.cursors.up.isDown) movePlayer('up');
-  if (_scene.cursors.down.isDown) movePlayer('down');
-  if (!_scene.arrowTouched) {
-    //player shoots
-    if (_scene.keyQ.isDown) {
-      fireBullet(_scene.player.x, _scene.player.y, -_scene.bulletVel, -_scene.bulletVel);
-    };
+  // Move player
+  if (_scene.cursors.left.isDown) movePlayer("left");
+  if (_scene.cursors.right.isDown) movePlayer("right");
+  if (_scene.cursors.up.isDown) movePlayer("up");
+  if (_scene.cursors.down.isDown) movePlayer("down");
 
-    if (_scene.keyW.isDown) {
-      fireBullet(_scene.player.x, _scene.player.y, 0, -_scene.bulletVel);
-    };
-    if (_scene.keyE.isDown) {
-      fireBullet(_scene.player.x, _scene.player.y, _scene.bulletVel, -_scene.bulletVel);
-    };
+  if (_scene.arrowTouched) return;
 
-    if (_scene.keyA.isDown) {
-      fireBullet(_scene.player.x, _scene.player.y, -_scene.bulletVel, 0);
-    };
-    if (_scene.keyD.isDown) {
-      fireBullet(_scene.player.x, _scene.player.y, _scene.bulletVel, 0);
-    };
-    if (_scene.keyZ.isDown) {
-      fireBullet(_scene.player.x, _scene.player.y, -_scene.bulletVel, _scene.bulletVel);
-    };
-    if (_scene.keyX.isDown) {
-      fireBullet(_scene.player.x, _scene.player.y, 0, _scene.bulletVel);
-    };
-    if (_scene.keyC.isDown) {
-      fireBullet(_scene.player.x, _scene.player.y, _scene.bulletVel, _scene.bulletVel);
-    };
-  }
+  if (Phaser.Input.Keyboard.JustDown(_scene.keyQ))
+    fireBullet(_scene.player.x, _scene.player.y, -_scene.bulletVel, -_scene.bulletVel);
+
+  else if (Phaser.Input.Keyboard.JustDown(_scene.keyW))
+    fireBullet(_scene.player.x, _scene.player.y, 0, -_scene.bulletVel);
+
+  else if (Phaser.Input.Keyboard.JustDown(_scene.keyE))
+    fireBullet(_scene.player.x, _scene.player.y, _scene.bulletVel, -_scene.bulletVel);
+
+  else if (Phaser.Input.Keyboard.JustDown(_scene.keyA))
+    fireBullet(_scene.player.x, _scene.player.y, -_scene.bulletVel, 0);
+
+  else if (Phaser.Input.Keyboard.JustDown(_scene.keyD))
+    fireBullet(_scene.player.x, _scene.player.y, _scene.bulletVel, 0);
+
+  else if (Phaser.Input.Keyboard.JustDown(_scene.keyZ))
+    fireBullet(_scene.player.x, _scene.player.y, -_scene.bulletVel, _scene.bulletVel);
+
+  else if (Phaser.Input.Keyboard.JustDown(_scene.keyX))
+    fireBullet(_scene.player.x, _scene.player.y, 0, _scene.bulletVel);
+
+  else if (Phaser.Input.Keyboard.JustDown(_scene.keyC))
+    fireBullet(_scene.player.x, _scene.player.y, _scene.bulletVel, _scene.bulletVel);
 }
 export function moveEnforcers(enforcer) {
   var du = 1;
