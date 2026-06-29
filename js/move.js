@@ -1,4 +1,6 @@
 import { GAME_STATE, wall } from "./config.js";
+import { createParticle, fireBullet } from "./entities.js";
+import { distSq } from "./utils.js";
 var _scene;
 
 export function moveEntities(scene) {
@@ -7,6 +9,10 @@ export function moveEntities(scene) {
   moveEnemies();
   moveBullets();
   moveParticles();
+  _scene.Bullets.children.each(bullet => {
+    bullet.x += bullet.velX;
+    bullet.y += bullet.velY;
+  });
 }
 
 export function moveEnemies() {
@@ -125,25 +131,33 @@ export function rage(enemy, du) {
 export function movePlayer(dir) {
   switch (dir) {
     case 'left':
-      _scene.player.velX = _scene.player.velX <= 0 ? -_scene.player.speed : 0;
-      _scene.player.anims.play('playerWalkLeft');
-      break;
-    case 'right':
-      _scene.player.velX = _scene.player.velX >= 0 ? _scene.player.speed : 0;
-      _scene.player.anims.play('playerWalkRight');
-      break;
-    case 'up':
-      _scene.player.velY = _scene.player.velY <= 0 ? -_scene.player.speed : 0;
-      _scene.player.anims.play('playerWalkUp');
-      break;
-    case 'down':
-      _scene.player.velY = _scene.player.velY >= 0 ? _scene.player.speed : 0;
-      _scene.player.anims.play('playerWalkDown');
+      _scene.player.velX = -_scene.player.speed;
+      _scene.player.velY = 0;
+      _scene.player.anims.play('playerWalkLeft', true);
       break;
 
-    default:
+    case 'right':
+      _scene.player.velX = _scene.player.speed;
+      _scene.player.velY = 0;
+      _scene.player.anims.play('playerWalkRight', true);
+      break;
+
+    case 'up':
+      _scene.player.velX = 0;
+      _scene.player.velY = -_scene.player.speed;
+      _scene.player.anims.play('playerWalkUp', true);
+      break;
+
+    case 'down':
+      _scene.player.velX = 0;
+      _scene.player.velY = _scene.player.speed;
+      _scene.player.anims.play('playerWalkDown', true);
       break;
   }
+
+  _scene.player.x += _scene.player.velX;
+  _scene.player.y += _scene.player.velY;
+  edgeBounce(_scene.player);
 }
 
 export function moveFamily() {
@@ -223,13 +237,13 @@ export function moveHulk(hulk) {
 export function findClosestFamilyMember(posX, posY) {
   var closest = null;
   var minDistSq = Infinity;
-  var members = Family.getChildren();
+  var members = _scene.Family.getChildren();
 
   members.forEach(member => {
-    var distSq = this.distSq(posX, posY, member.x, member.y);
-    if (distSq < minDistSq) {
+    var dS = distSq(posX, posY, member.x, member.y);
+    if (dS < minDistSq) {
       closest = member;
-      minDistSq = distSq;
+      minDistSq = dS;
     }
   });
   return closest;
@@ -352,7 +366,7 @@ export function playerHitEnemy(player, enemy) {
 export function bulletHitEnemy(bullet, enemy) {
   var canTakeHit = enemy.takeBulletHit;
   if (!canTakeHit) {
-    score += enemy.value;
+    _scene.score += enemy.value;
     makeExplosion(enemy);
     enemy.destroy();
     bullet.destroy();
@@ -395,7 +409,7 @@ export function moveProgs(enemy) {
 export function makeExplosion(enemy) {
   var numberOfParticles = getNumberOfParticles();
   for (var j = 0; j < numberOfParticles; j++) {
-    var colorDefinition = colors[Phaser.Math.Between(0, colors.length)];
+    var colorDefinition = _scene.colors[Phaser.Math.Between(0, _scene.colors.length)];
     var particle = {
       dirn: Math.random() * 2 * Math.PI,
       speed: Math.random() * 4,
@@ -505,39 +519,34 @@ export function processUserInput() {
   if (_scene.cursors.right.isDown) movePlayer('right');
   if (_scene.cursors.up.isDown) movePlayer('up');
   if (_scene.cursors.down.isDown) movePlayer('down');
-
   if (!_scene.arrowTouched) {
     //player shoots
-    _scene.input.keyboard.on('keydown_Q', function (event) {
-      fireBullet(player.x, player.y, -_bulletVel, -_bulletVel)
-    });
+    if (_scene.keyQ.isDown) {
+      fireBullet(_scene.player.x, _scene.player.y, -_scene.bulletVel, -_scene.bulletVel);
+    };
 
-    _scene.input.keyboard.on('keydown_W', function (event) {
-      fireBullet(player.x, player.y, 0, -_bulletVel)
-    });
+    if (_scene.keyW.isDown) {
+      fireBullet(_scene.player.x, _scene.player.y, 0, -_scene.bulletVel);
+    };
+    if (_scene.keyE.isDown) {
+      fireBullet(_scene.player.x, _scene.player.y, _scene.bulletVel, -_scene.bulletVel);
+    };
 
-    _scene.input.keyboard.on('keydown_E', function (event) {
-      fireBullet(player.x, player.y, _bulletVel, -_bulletVel)
-    });
-
-    _scene.input.keyboard.on('keydown_A', function (event) {
-      fireBullet(player.x, player.y, -_bulletVel, 0)
-    });
-    _scene.input.keyboard.on('keydown_D', function (event) {
-      fireBullet(player.x, player.y, _bulletVel, 0)
-    });
-
-    _scene.input.keyboard.on('keydown_Z', function (event) {
-      fireBullet(player.x, player.y, -_bulletVel, _bulletVel)
-    });
-
-    _scene.input.keyboard.on('keydown_X', function (event) {
-      fireBullet(player.x, player.y, 0, _bulletVel)
-    });
-
-    _scene.input.keyboard.on('keydown_C', function (event) {
-      fireBullet(player.x, player.y, _bulletVel, _bulletVel)
-    });
+    if (_scene.keyA.isDown) {
+      fireBullet(_scene.player.x, _scene.player.y, -_scene.bulletVel, 0);
+    };
+    if (_scene.keyD.isDown) {
+      fireBullet(_scene.player.x, _scene.player.y, _scene.bulletVel, 0);
+    };
+    if (_scene.keyZ.isDown) {
+      fireBullet(_scene.player.x, _scene.player.y, -_scene.bulletVel, _scene.bulletVel);
+    };
+    if (_scene.keyX.isDown) {
+      fireBullet(_scene.player.x, _scene.player.y, 0, _scene.bulletVel);
+    };
+    if (_scene.keyC.isDown) {
+      fireBullet(_scene.player.x, _scene.player.y, _scene.bulletVel, _scene.bulletVel);
+    };
   }
 }
 export function moveEnforcers(enforcer) {

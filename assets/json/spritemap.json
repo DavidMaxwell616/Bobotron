@@ -2007,6 +2007,27 @@
           "h": 10
         }
       },
+        {
+        "filename": "Mom_03.png",
+        "rotated": false,
+        "trimmed": false,
+        "sourceSize": {
+          "w": 14,
+          "h": 28
+        },
+        "spriteSourceSize": {
+          "x": 0,
+          "y": 0,
+          "w": 14,
+          "h": 28
+        },
+        "frame": {
+          "x": 77,
+          "y": 165,
+          "w": 14,
+          "h": 28
+        }
+      },
       {
         "filename": "Mom_10.png",
         "rotated": false,
@@ -2263,6 +2284,27 @@
       },
       {
         "filename": "Mom_06.png",
+        "rotated": false,
+        "trimmed": false,
+        "sourceSize": {
+          "w": 12,
+          "h": 26
+        },
+        "spriteSourceSize": {
+          "x": 0,
+          "y": 0,
+          "w": 12,
+          "h": 26
+        },
+        "frame": {
+          "x": 51,
+          "y": 259,
+          "w": 12,
+          "h": 26
+        }
+      },
+        {
+        "filename": "Mom_07.png",
         "rotated": false,
         "trimmed": false,
         "sourceSize": {

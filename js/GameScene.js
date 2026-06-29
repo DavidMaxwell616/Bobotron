@@ -4,7 +4,7 @@ import {
     initSpheroids, initBrains, initQuarks
 } from "./entities.js";
 import {
-    moveEntities, enemyHitFamily, playerHitEnemy, processUserInput
+    moveEntities, enemyHitFamily, playerHitEnemy, processUserInput, bulletHitEnemy
 } from "./move.js";
 
 export class GameScene extends Phaser.Scene {
@@ -28,6 +28,7 @@ export class GameScene extends Phaser.Scene {
         this.lives = 3;
         this.ammo = 500;
         this.shieldTime = 20;
+        this.bulletVel = 1;
         this.Family = this.physics.add.group();
         this.Enemies = this.physics.add.group();
         this.Bullets = this.physics.add.group();
@@ -55,7 +56,15 @@ export class GameScene extends Phaser.Scene {
         );
         this.player.visible = false;
         this.cursors = this.input.keyboard.createCursorKeys();
-
+        this.fireKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.keyQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+        this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        this.keyE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+        this.keyA = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        this.keyD = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
+        this.keyX = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X);
+        this.keyC = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C);
         this.physics.add.collider(this.player, this.Enemies, function (player, enemy) {
             playerHitEnemy(player, enemy);
         });
@@ -146,6 +155,8 @@ export class GameScene extends Phaser.Scene {
         }
 
     }
+
+
     renderGameOver() {
         this.gameOverText = this.add.text(
             W * .2,
@@ -229,6 +240,7 @@ export class GameScene extends Phaser.Scene {
                     else if (this.levelStarted && enemiesLeft == 0 && this.Particles.getLength() == 0) {
                         this.clearLevel();
                         this.level++;
+                        this.levelStarted = false;
                         this.isRefreshingLevel = true;
                         this.nextRect = time + rect.rectDelay;
                         this.gameState = GAME_STATE.Transition;

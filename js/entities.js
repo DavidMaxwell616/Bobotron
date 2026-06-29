@@ -1,4 +1,4 @@
-import { wall, SECS_TO_NOMINALS, scoreValues, levelSpecs } from "./config.js";
+import { wall, SECS_TO_NOMINALS, scoreValues, levelSpecs, electrodes } from "./config.js";
 import { distSq, square } from "./utils.js";
 var _scene;
 
@@ -17,7 +17,6 @@ export function findClosestFamilyMember(posX, posY) {
 }
 
 export function initPlayer(scene) {
-  var _bulletVel = 10;
   _scene = scene;
   scene.player.visible = true;
   scene.player.speed = 1;
@@ -29,7 +28,6 @@ export function initPlayer(scene) {
 }
 
 function initPeopleAnimations(entity) {
-  console.log(entity);
   setupAnimation(entity, 1, 3, 'WalkLeft');
   setupAnimation(entity, 4, 6, 'WalkRight');
   setupAnimation(entity, 7, 9, 'WalkDown');
@@ -48,7 +46,7 @@ export function setupAnimation(entity, start, end, movement) {
     suffix: '.png'
   });
   var anim = _scene.anims.create({
-    key: entity.name + movement,
+    key: key,
     frames: frameNames,
     frameRate: 5,
     repeat: -1
@@ -83,7 +81,7 @@ export function initFamily(number) {
     setFamilyProperties(child);
     child.name = 'Child';
     initPeopleAnimations(child);
-    Family.add(child);
+    _scene.Family.add(child);
   }
 
 }
@@ -152,7 +150,7 @@ export function initHulks(number) {
     hulk.facing = 0;
     hulk.takeBulletHit = true;
     hulk.name = 'Hulk';
-    hulk.value = scoreValues.Hulk * multiplier;
+    hulk.value = scoreValues.Hulk * _scene.multiplier;
     hulk.velX = 0;
     hulk.velY = 0;
     setupAnimation(hulk, 1, 3, 'WalkLeft');
@@ -313,24 +311,25 @@ export function fireSpark(x, y, angle) {
 };
 
 export function fireBullet(x, y, dirnX, dirnY) {
-  if (ammo == 0)
-    return;
-  ammo--
-  Bullets.add(new Projectile({
-    x: x,
-    y: y,
-    velX: dirnX,
-    velY: dirnY
-  }));
-  ammo--;
-};
+  if (_scene.ammo <= 0) return;
 
+  _scene.ammo--;
+
+  const bullet = Projectile({
+    x,
+    y,
+    velX: dirnX * 8,
+    velY: dirnY * 8
+  });
+
+  _scene.Bullets.add(bullet);
+}
 export function Projectile(descr) {
   if (descr.velX == 0 && descr.velY == 0)
     descr.velX = 0;
   var newSprite;
   switch (true) {
-    case player.hasShotgun:
+    case _scene.player.hasShotgun:
       var graphics = _scene.add.graphics();
       var circle = new Phaser.Geom.Circle(descr.x, descr.y, 6);
       graphics.fillStyle(0xffffff, .3);
@@ -350,7 +349,7 @@ export function Projectile(descr) {
       newSprite.velY = descr.velY;
       graphics.destroy();
       break;
-    case player.hasMachineGun:
+    case _scene.player.hasMachineGun:
       var graphics = _scene.add.graphics();
       var circle = new Phaser.Geom.Circle(descr.x, descr.y, 6);
       graphics.fillStyle(0xffffff, .3);
@@ -486,7 +485,7 @@ export function spawnFragment(num, specificColor) {
 // };
 
 export function createParticle(descr) {
-  Particles.add(new Particle(descr));
+  _scene.Particles.add(new Particle(descr));
 };
 
 export function Particle(descr) {
