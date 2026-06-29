@@ -238,7 +238,7 @@ export function initTank(x, y) {
   var tank = _scene.add.sprite(x, y, 'spriteMap', 'Tank_01.png');
   tank.shellFireChance = 0.01; //1% chance of firing a shell/update
   tank.ammo = 20;
-  tank.value = scoreValues.Tank * multiplier;
+  tank.value = scoreValues.Tank * _scene.multiplier;
   tank.dropChance = 1; // 100% chance of a random drop
   tank.stepsize = 3;
   _scene.Enemies.add(tank);

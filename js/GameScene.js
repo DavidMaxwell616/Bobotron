@@ -203,6 +203,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     update(time, delta) {
+        if (this.playerDying)
+            return;
         const dt = delta / 1000;
 
         this.arrowTouched = false;
@@ -322,7 +324,7 @@ export class GameScene extends Phaser.Scene {
 
         //display the multiplier and the level
         var disp = 'X' + this.multiplier + '  Level: ' + this.level;
-        this.levelText = this.add.text(W / 2 - 140, 5, disp, {
+        this.levelText = this.add.text(W * .22, 5, disp, {
             fontFamily: 'Arial',
             fontSize: '20px',
             fill: 'red',
@@ -330,7 +332,7 @@ export class GameScene extends Phaser.Scene {
 
         // Display ammo
         var text = 'Ammo: ' + this.ammo;
-        this.ammoText = this.add.text(W / 2, 5, text, {
+        this.ammoText = this.add.text(W * .42, 5, text, {
             fontFamily: 'Arial',
             fontSize: '20px',
             fill: 'red',

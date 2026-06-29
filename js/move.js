@@ -350,7 +350,6 @@ export function playerHitEnemy(player, enemy) {
 
   _scene.playerDying = true;
   _scene.lives--;
-
   _scene.player.setVisible(false);
 
   const skull = _scene.add.sprite(
@@ -365,22 +364,17 @@ export function playerHitEnemy(player, enemy) {
     enemy.destroy();
   }
 
-  _scene.time.delayedCall(5000, () => {
-
+  _scene.time.delayedCall(3000, () => {
     skull.destroy();
 
     if (_scene.lives <= 0) {
       _scene.clearLevel();
       _scene.gameState = GAME_STATE.GameOver;
+      _scene.playerDying = false;
     } else {
-      // Reset the current level
       _scene.scene.restart();
-      // or call your own reset method:
-      // _scene.resetLevel();
+      _scene.playerDying = false;
     }
-
-    _scene.playerDying = false;
-
   });
 }
 
