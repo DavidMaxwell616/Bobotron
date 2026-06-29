@@ -1,4 +1,4 @@
-import { GAME_STATE, wall, scoreValues } from "./config.js";
+import { GAME_STATE, wall, scoreValues, rect } from "./config.js";
 import { createParticle, fireBullet } from "./entities.js";
 import { distSq } from "./utils.js";
 var _scene;
@@ -367,14 +367,19 @@ export function playerHitEnemy(player, enemy) {
   _scene.time.delayedCall(3000, () => {
     skull.destroy();
 
+    _scene.clearLevel();
+
     if (_scene.lives <= 0) {
-      _scene.clearLevel();
       _scene.gameState = GAME_STATE.GameOver;
-      _scene.playerDying = false;
     } else {
-      _scene.scene.restart();
-      _scene.playerDying = false;
+      _scene.isRefreshingLevel = true;
+      _scene.levelStarted = false;
+      _scene.levelRendered = false;
+      _scene.nextRect = _scene.time.now + rect.rectDelay;
+      _scene.gameState = GAME_STATE.Transition;
     }
+
+    _scene.playerDying = false;
   });
 }
 
